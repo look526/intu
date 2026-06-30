@@ -1,0 +1,80 @@
+<view class="page">
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">我的收藏</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 收藏列表 -->
+  <view class="note-list" wx:if="{{notes.length > 0}}">
+    <view class="note-card" wx:for="{{notes}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <!-- 用户信息 -->
+      <view class="note-header">
+        <view class="note-user">
+          <image class="note-avatar" src="{{item.avatar}}" mode="aspectFill" />
+          <view class="note-user-info">
+            <text class="note-username">{{item.username}}</text>
+            <text class="note-time">{{item.timeAgo}}</text>
+          </view>
+        </view>
+        <view class="note-course-tag" wx:if="{{item.courseName}}">{{item.courseName}}</view>
+      </view>
+      <!-- 笔记内容 -->
+      <view class="note-content line-clamp-3">{{item.content}}</view>
+      <!-- 笔记图片 -->
+      <view class="note-images" wx:if="{{item.images.length > 0}}">
+        <image
+          class="note-img"
+          wx:for="{{item.images}}"
+          wx:for-item="img"
+          wx:key="*this"
+          src="{{img}}"
+          mode="aspectFill"
+          catchtap="previewImage"
+          data-urls="{{item.images}}"
+          data-current="{{img}}"
+        />
+      </view>
+      <!-- 操作栏 -->
+      <view class="note-actions" catchtap="">
+        <view class="note-action {{item.isLiked ? 'liked' : ''}}" catchtap="likeNote" data-id="{{item.id}}">
+          <view class="action-svg {{item.isLiked ? 'svg-heart-filled' : 'svg-heart'}}"></view>
+          <text>{{item.likes}}</text>
+        </view>
+        <view class="note-action" catchtap="goDetail" data-id="{{item.id}}">
+          <view class="action-svg svg-comment"></view>
+          <text>{{item.comments}}</text>
+        </view>
+        <view class="note-action favorited" catchtap="unfavoriteNote" data-id="{{item.id}}">
+          <view class="action-svg svg-star-filled"></view>
+          <text>已收藏</text>
+        </view>
+        <button class="note-action share-action" open-type="share" data-id="{{item.id}}" catchtap="">
+          <view class="action-svg svg-share"></view>
+          <text>转发</text>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && notes.length === 0}}">
+    <view class="empty-icon-wrap">
+      <view class="empty-svg-icon"></view>
+    </view>
+    <text class="empty-text">还没有收藏任何笔记</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-more" wx:if="{{loading && page > 1}}">
+    <text>加载中...</text>
+  </view>
+  <view class="loading-more" wx:if="{{!hasMore && notes.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</view>

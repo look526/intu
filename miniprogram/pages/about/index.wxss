@@ -1,0 +1,89 @@
+/* 关于我们页 */
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+/* 头部渐变 */
+.header-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400rpx;
+  background: linear-gradient(to bottom, #eff6ff, #f8f9fa);
+  z-index: 0;
+}
+
+/* 自定义导航栏 */
+.custom-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 24rpx;
+}
+
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.back-icon {
+  width: 20rpx;
+  height: 20rpx;
+  border-left: 4rpx solid #333;
+  border-bottom: 4rpx solid #333;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.nav-placeholder {
+  width: 64rpx;
+}
+
+/* 内容区域 */
+.content-area {
+  position: relative;
+  z-index: 1;
+  padding: 24rpx 32rpx;
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.rich-card {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.rich-content {
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: #333;
+}

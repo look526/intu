@@ -1,0 +1,154 @@
+<view class="page">
+  <!-- 头部渐变 -->
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">班级详情</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content-wrap">
+    <!-- 班级信息头 -->
+    <view class="card detail-header" wx:if="{{detail}}">
+      <view class="detail-top">
+        <text class="detail-name">{{detail.name}}</text>
+        <view class="detail-status-tag {{detail.status}}">
+          {{detail.status === 'forming' ? '组建中' : detail.status === 'active' ? '开课中' : detail.status === 'completed' ? '已结课' : '已排课'}}
+        </view>
+      </view>
+      <text class="detail-course">{{detail.course.name}}</text>
+      <view class="detail-meta">
+        <view class="meta-chip">
+          <view class="meta-svg meta-svg-users"></view>
+          <text>{{detail._count.students}}人</text>
+        </view>
+        <view class="meta-chip">
+          <view class="meta-svg meta-svg-book"></view>
+          <text>{{detail._count.schedules}}节课</text>
+        </view>
+        <view class="meta-chip" wx:if="{{detail.nextSchedule}}">
+          <view class="meta-svg meta-svg-clock"></view>
+          <text>{{detail.nextSchedule.startTimeFormatted}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 同学区域 -->
+    <view class="card section-card" wx:if="{{classmates.length > 0}}">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <view class="title-indicator"></view>
+          <text class="section-title">班级同学 ({{classmates.length}})</text>
+        </view>
+      </view>
+      <scroll-view class="classmate-list" scroll-x>
+        <view class="classmate-item" wx:for="{{classmates}}" wx:key="studentId">
+          <image class="classmate-avatar" src="{{item.avatar}}" mode="aspectFill" />
+          <text class="classmate-name">{{item.nickname || '同学'}}</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 完整课表 -->
+    <view class="card section-card">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <view class="title-indicator"></view>
+          <text class="section-title">班级课表 ({{schedules.length}})</text>
+        </view>
+      </view>
+      <view wx:if="{{schedules.length > 0}}">
+        <view class="schedule-card {{item.isPast ? 'past' : ''}}" wx:for="{{visibleSchedules}}" wx:key="id">
+          <view class="schedule-date-badge">{{item.date}}</view>
+          <view class="schedule-card-body">
+            <view class="schedule-card-time">{{item.time}}</view>
+            <view class="schedule-card-name">{{item.courseName}}</view>
+            <view class="schedule-card-info">
+              <text wx:if="{{item.teacher}}">{{item.teacher}}</text>
+              <text wx:if="{{item.location}}"> · {{item.location}}</text>
+            </view>
+          </view>
+          <view class="schedule-card-tag {{item.isPast ? 'past' : 'upcoming'}}">{{item.isPast ? '已结束' : '待上课'}}</view>
+        </view>
+        <view class="view-all-btn" wx:if="{{schedules.length > visibleSchedules.length || showAllSchedules}}" bindtap="toggleShowAllSchedules">
+          <text class="view-all-text">{{showAllSchedules ? '收起' : '查看全部课表'}}</text>
+          <view class="view-all-arrow {{showAllSchedules ? 'up' : ''}}"></view>
+        </view>
+      </view>
+      <view class="empty-state" wx:else>
+        <view class="empty-icon-wrap">
+          <view class="empty-svg empty-svg-calendar"></view>
+        </view>
+        <text class="empty-text">暂无课表安排</text>
+      </view>
+    </view>
+
+    <!-- 班级笔记 -->
+    <view class="card section-card">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <view class="title-indicator"></view>
+          <text class="section-title">班级笔记</text>
+        </view>
+        <view class="publish-btn" bindtap="goPublishNote">
+          <view class="publish-svg"></view>
+          <text class="publish-text">发布</text>
+        </view>
+      </view>
+
+      <view class="note-list">
+        <view class="note-card" wx:for="{{notes}}" wx:key="id" bindtap="goNoteDetail" data-id="{{item.id}}">
+          <view class="note-header">
+            <view class="note-user">
+              <image class="note-avatar" src="{{item.avatar}}" mode="aspectFill" />
+              <view class="note-user-info">
+                <text class="note-username">{{item.username}}</text>
+                <text class="note-time">{{item.timeAgo}}</text>
+              </view>
+            </view>
+            <view class="note-course-tag" wx:if="{{item.courseName}}">{{item.courseName}}</view>
+          </view>
+          <view class="note-content line-clamp-3">{{item.content}}</view>
+          <view class="note-images" wx:if="{{item.images.length > 0}}">
+            <image
+              class="note-img"
+              wx:for="{{item.images}}"
+              wx:for-item="img"
+              wx:key="*this"
+              src="{{img}}"
+              mode="aspectFill"
+              bindtap="previewImage"
+              data-urls="{{item.images}}"
+              data-current="{{img}}"
+            />
+          </view>
+          <view class="note-actions">
+            <view class="note-action {{item.isLiked ? 'liked' : ''}}" bindtap="likeNote" data-id="{{item.id}}">
+              <text class="action-icon">{{item.isLiked ? '♥' : '♡'}}</text>
+              <text>{{item.likes}}</text>
+            </view>
+            <view class="note-action" bindtap="goNoteDetail" data-id="{{item.id}}">
+              <text class="action-icon">💬</text>
+              <text>{{item.comments}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="load-more" wx:if="{{noteHasMore && notes.length > 0}}" bindtap="loadMoreNotes">
+          <text class="load-more-text">{{noteLoading ? '加载中...' : '加载更多'}}</text>
+        </view>
+        <view class="empty-state" wx:if="{{notes.length === 0 && !noteLoading}}">
+          <view class="empty-icon-wrap">
+            <view class="empty-svg empty-svg-note"></view>
+          </view>
+          <text class="empty-text">还没有笔记，快来发第一篇吧~</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

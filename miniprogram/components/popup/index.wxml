@@ -1,0 +1,13 @@
+<view class="popup-mask" wx:if="{{visible}}" catchtouchmove="noop">
+  <view class="popup-container">
+    <image
+      class="popup-image"
+      src="{{popupData.imageUrl}}"
+      mode="widthFix"
+      bindtap="onTap"
+    />
+    <view class="popup-close" bindtap="onClose">
+      <view class="close-icon"></view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,21 @@
+<view class="page">
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">关于我们</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="content-area">
+    <view wx:if="{{loading}}" class="loading-wrap">
+      <view class="loading-text">加载中...</view>
+    </view>
+    <view wx:else class="rich-card">
+      <rich-text class="rich-content" nodes="{{content}}" />
+    </view>
+  </view>
+</view>

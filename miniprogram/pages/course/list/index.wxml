@@ -1,0 +1,65 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <text class="nav-title">选课</text>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input" bindtap="goSearch">
+      <text class="search-icon">🔍</text>
+      <text class="search-placeholder">搜索课程</text>
+    </view>
+    <view class="filter-btn" bindtap="toggleFilter">
+      <text class="filter-icon">⏣</text>
+    </view>
+  </view>
+
+  <!-- 主体：左侧分类 + 右侧列表 -->
+  <view class="main">
+    <!-- 左侧分类 -->
+    <scroll-view class="sidebar" scroll-y>
+      <view
+        class="sidebar-item {{activeCategory === item.id ? 'active' : ''}}"
+        wx:for="{{categories}}"
+        wx:key="id"
+        bindtap="onCategoryTap"
+        data-id="{{item.id}}"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 右侧课程列表 -->
+    <scroll-view class="course-list" scroll-y bindscrolltolower="loadMore">
+      <view class="course-card" wx:for="{{filteredCourses}}" wx:key="id" bindtap="goCourseDetail" data-id="{{item.id}}">
+        <view class="cover-wrapper">
+          <image class="course-cover" src="{{item.coverImage}}" mode="aspectFill" />
+          <text class="category-badge">{{item.category.name}}</text>
+        </view>
+        <view class="course-info">
+          <text class="course-title">{{item.name}}</text>
+          <text class="course-desc">{{item.description}}</text>
+          <view class="course-bottom">
+            <text class="course-meta">{{item.totalHours}}课时 · {{item.teacher.realName}}</text>
+            <view class="trial-btn" catchtap="onTrialTap" data-id="{{item.id}}">
+              <text class="trial-btn-text">免费试听</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="loading-tip" wx:if="{{loading}}">
+        <text>加载中...</text>
+      </view>
+      <view class="loading-tip" wx:elif="{{!hasMore && filteredCourses.length > 0}}">
+        <text>— 没有更多了 —</text>
+      </view>
+      <view class="loading-tip" wx:elif="{{!loading && filteredCourses.length === 0}}">
+        <text>暂无课程</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>
+
+<popup visible="{{popupVisible}}" popup-data="{{popupData}}" bind:close="onPopupClose" />

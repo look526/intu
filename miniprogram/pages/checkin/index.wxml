@@ -1,0 +1,84 @@
+<view class="page">
+  <!-- 头部渐变 -->
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">课程打卡</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="content-wrap" wx:if="{{!loading}}">
+    <!-- 课程信息卡片 -->
+    <view class="info-card">
+      <view class="info-row">
+        <text class="info-course">{{courseName}}</text>
+        <text class="info-time">{{timeStr}}</text>
+      </view>
+      <view class="info-details">
+        <view class="info-item">
+          <text class="info-icon">◎</text>
+          <text>{{classroomName}}（{{venueName}}）</text>
+        </view>
+        <view class="info-item" wx:if="{{teacherName}}">
+          <text class="info-icon">👤</text>
+          <text>{{teacherName}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 地图区域 -->
+    <view class="map-wrap">
+      <map
+        class="checkin-map"
+        latitude="{{venueLatitude}}"
+        longitude="{{venueLongitude}}"
+        scale="15"
+        markers="{{markers}}"
+        circles="{{circles}}"
+        show-location
+      />
+      <!-- 刷新位置按钮 -->
+      <view class="refresh-btn" bindtap="refreshLocation">
+        <view class="refresh-icon"></view>
+      </view>
+    </view>
+
+    <!-- 距离信息 -->
+    <view class="distance-wrap">
+      <block wx:if="{{locationFailed}}">
+        <text class="distance-text error">定位失败，请点击右下角刷新按钮重试</text>
+      </block>
+      <block wx:elif="{{distance >= 0}}">
+        <text class="distance-text {{canCheckin ? 'in-range' : 'out-range'}}">
+          距离教室 {{distance}}m {{canCheckin ? '· 已进入打卡范围' : '· 超出打卡范围(500m)'}}
+        </text>
+      </block>
+      <block wx:else>
+        <text class="distance-text">正在获取位置...</text>
+      </block>
+    </view>
+
+    <!-- 打卡按钮 -->
+    <view class="checkin-btn-wrap">
+      <view
+        class="checkin-btn {{expired ? 'disabled' : checkinDone ? 'done' : canCheckin ? 'active' : 'disabled'}}"
+        bindtap="doCheckin"
+      >
+        <text class="checkin-btn-text">
+          {{expired ? '已过期' : checkinDone ? '已打卡' : submitting ? '打卡中...' : canCheckin ? '立即打卡' : '超出范围'}}
+        </text>
+      </view>
+      <text class="checkin-hint" wx:if="{{expired}}">已超过打卡时间（上课后1小时内）</text>
+      <text class="checkin-hint" wx:elif="{{!canCheckin && !checkinDone && !locationFailed}}">请移动至教室500米范围内</text>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-wrap" wx:else>
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

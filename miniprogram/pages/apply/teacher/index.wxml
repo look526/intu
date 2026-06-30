@@ -1,0 +1,158 @@
+<view class="page">
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    <text class="nav-title">成为老师</text>
+  </view>
+
+  <!-- 审核状态页 -->
+  <view class="status-page" wx:if="{{applicationStatus && !showForm}}">
+    <!-- 待审核 Hero -->
+    <view class="hero-pending" wx:if="{{applicationStatus === 'pending'}}">
+      <view class="hero-glow"></view>
+      <view class="hero-badge">
+        <text class="hero-badge-icon">🎓</text>
+      </view>
+      <text class="hero-title">申请已提交，请静候佳音</text>
+      <view class="hero-divider"></view>
+      <text class="hero-quote">“愿意将自己的技能与热爱分享给更多人，
+这份奉献精神本身就很了不起。
+感谢你选择成为一名传递知识与美好的人。”</text>
+      <view class="hero-info-col">
+        <view class="hero-info-item">
+          <text class="hero-info-text">1-3 个工作日内完成审核</text>
+        </view>
+        <view class="hero-info-item">
+          <text class="hero-info-text">请保持电话畅通，工作人员会尽快联系您</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 已通过 -->
+    <view class="status-card approved" wx:if="{{applicationStatus === 'approved'}}">
+      <view class="status-icon-wrap approved-bg">
+        <text class="status-emoji">✅</text>
+      </view>
+      <text class="status-title">恭喜，审核通过！</text>
+      <text class="status-desc">您已成为老师，可以开始教学之旅了</text>
+    </view>
+
+    <!-- 已驳回 -->
+    <view class="status-card rejected" wx:if="{{applicationStatus === 'rejected'}}">
+      <view class="status-icon-wrap rejected-bg">
+        <text class="status-emoji">❌</text>
+      </view>
+      <text class="status-title">审核未通过</text>
+      <view class="reject-reason" wx:if="{{auditRemark}}">
+        <text class="reject-label">原因：</text>
+        <text class="reject-text">{{auditRemark}}</text>
+      </view>
+      <view class="reapply-btn" bindtap="reapply">重新申请</view>
+    </view>
+  </view>
+
+  <!-- 申请表单 -->
+  <scroll-view class="form-scroll" scroll-y wx:if="{{showForm}}">
+    <!-- 基本信息 -->
+    <view class="form-card">
+      <text class="card-title">基本信息</text>
+      <view class="form-item">
+        <text class="form-label">真实姓名 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入真实姓名" value="{{realName}}" bindinput="onInputChange" data-field="realName" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">联系电话 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入手机号" value="{{phone}}" bindinput="onInputChange" data-field="phone" type="number" maxlength="11" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">擅长领域 <text class="required">*</text></text>
+        <input class="form-input" placeholder="如：绘画、吉他、烘焙" value="{{specialties}}" bindinput="onInputChange" data-field="specialties" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">教学经验 <text class="required">*</text></text>
+        <picker mode="selector" range="{{yearOptions}}" bindchange="onYearsChange">
+          <view class="form-input picker-input">
+            <text class="{{teachingYearsText ? '' : 'placeholder'}}">{{teachingYearsText || '请选择教学年限'}}</text>
+            <text class="picker-arrow">›</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 个人简介 -->
+    <view class="form-card">
+      <text class="card-title">个人简介</text>
+      <textarea class="form-textarea" placeholder="介绍一下你的教学经历和教学理念..." maxlength="500" value="{{bio}}" bindinput="onInputChange" data-field="bio" />
+      <text class="char-count">{{bio.length}}/500</text>
+    </view>
+
+    <!-- 形象照 -->
+    <view class="form-card">
+      <text class="card-title">个人形象照 <text class="required">*</text></text>
+      <text class="card-hint">用于展示给学员，请上传正式照片</text>
+      <view class="avatar-upload" wx:if="{{!avatarUrl}}" bindtap="chooseAvatar">
+        <text class="upload-plus">+</text>
+        <text class="upload-text">上传照片</text>
+      </view>
+      <view class="avatar-preview" wx:else>
+        <image class="avatar-img" src="{{avatarUrl}}" mode="aspectFill" bindtap="previewImage" data-urls="{{[avatarUrl]}}" data-current="{{avatarUrl}}" />
+        <view class="remove-btn" bindtap="removeImage" data-type="avatar">×</view>
+      </view>
+    </view>
+
+    <!-- 资质证书 -->
+    <view class="form-card">
+      <text class="card-title">资质证书 <text class="required">*</text></text>
+      <text class="card-hint">教师资格证、专业等级证书、获奖证书等（至少1张，最多6张）</text>
+      <view class="image-grid">
+        <view class="grid-item" wx:for="{{certificateImages}}" wx:key="*this">
+          <image class="grid-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-urls="{{certificateImages}}" data-current="{{item}}" />
+          <view class="remove-btn" bindtap="removeImage" data-type="certificate" data-idx="{{index}}">×</view>
+        </view>
+        <view class="grid-add" wx:if="{{certificateImages.length < 6}}" bindtap="chooseCertificates">
+          <text class="upload-plus">+</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 作品/教学成果 -->
+    <view class="form-card">
+      <text class="card-title">作品/教学成果 <text class="optional">（选填）</text></text>
+      <text class="card-hint">个人作品、学员作品、教学场景等（最多9张）</text>
+      <view class="image-grid">
+        <view class="grid-item" wx:for="{{portfolioImages}}" wx:key="*this">
+          <image class="grid-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-urls="{{portfolioImages}}" data-current="{{item}}" />
+          <view class="remove-btn" bindtap="removeImage" data-type="portfolio" data-idx="{{index}}">×</view>
+        </view>
+        <view class="grid-add" wx:if="{{portfolioImages.length < 9}}" bindtap="choosePortfolio">
+          <text class="upload-plus">+</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 自我介绍视频 -->
+    <view class="form-card">
+      <text class="card-title">自我介绍视频 <text class="optional">（选填）</text></text>
+      <text class="card-hint">录制 30 秒 - 3 分钟的教学展示视频，让我们更好了解你</text>
+      <view class="video-upload" wx:if="{{!introVideoUrl}}" bindtap="chooseVideo">
+        <text class="upload-plus">▶</text>
+        <text class="upload-text">上传视频</text>
+      </view>
+      <view class="video-preview" wx:else>
+        <video class="preview-video" src="{{introVideoUrl}}" controls object-fit="cover" />
+        <view class="remove-btn video-remove" bindtap="removeImage" data-type="video">×</view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submitApplication">
+      {{submitting ? '提交中...' : '提交申请'}}
+    </view>
+
+    <view style="height: 80rpx;"></view>
+  </scroll-view>
+</view>

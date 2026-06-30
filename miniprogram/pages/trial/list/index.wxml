@@ -1,0 +1,55 @@
+<view class="page">
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">我的试听</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 试听列表 -->
+  <view class="trial-list" wx:if="{{trials.length > 0}}">
+    <view class="trial-card" wx:for="{{trials}}" wx:key="id" bindtap="goCourseDetail" data-course-id="{{item.courseId}}">
+      <!-- 课程封面 + 信息 -->
+      <view class="card-top">
+        <image wx:if="{{item.coverImage}}" class="course-cover" src="{{item.coverImage}}" mode="aspectFill" />
+        <view wx:else class="course-cover cover-placeholder">
+          <text class="cover-text">试听</text>
+        </view>
+        <view class="card-info">
+          <text class="course-name">{{item.courseName}}</text>
+          <text class="trial-time">预约时间: {{item.dateTimeStr}}</text>
+          <view wx:if="{{item.preferDate}}" class="trial-prefer">
+            <text>期望日期: {{item.preferDateStr}}</text>
+          </view>
+        </view>
+        <view class="status-tag status-{{item.status}}">{{item.statusText}}</view>
+      </view>
+      <!-- 备注 -->
+      <view class="card-remark" wx:if="{{item.remark}}">
+        <text class="remark-label">备注:</text>
+        <text class="remark-text">{{item.remark}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && trials.length === 0}}">
+    <view class="empty-icon-wrap">
+      <view class="empty-svg-icon"></view>
+    </view>
+    <text class="empty-text">还没有试听预约</text>
+    <view class="empty-btn" bindtap="goCourseList">去选课</view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-more" wx:if="{{loading && page > 1}}">
+    <text>加载中...</text>
+  </view>
+  <view class="loading-more" wx:if="{{!hasMore && trials.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</view>

@@ -1,0 +1,222 @@
+/* 打卡页面样式 */
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.header-gradient {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 400rpx;
+  background: linear-gradient(to bottom, #eff6ff, #f8f9fa);
+  z-index: 0;
+}
+
+/* 自定义导航栏 */
+.custom-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 24rpx;
+}
+
+.nav-back {
+  width: 64rpx; height: 64rpx;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.04);
+}
+
+.back-icon {
+  width: 20rpx; height: 20rpx;
+  border-left: 4rpx solid #1a1a1a;
+  border-bottom: 4rpx solid #1a1a1a;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.nav-placeholder { width: 64rpx; }
+
+/* 内容区域 */
+.content-wrap {
+  position: relative;
+  z-index: 1;
+  padding: 16rpx 32rpx 160rpx;
+}
+
+/* 课程信息卡片 */
+.info-card {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.05);
+  border: 1rpx solid rgba(0,0,0,0.04);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.info-course {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.info-time {
+  font-size: 26rpx;
+  color: #2563EB;
+  background: rgba(37,99,235,0.08);
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  font-weight: 500;
+}
+
+.info-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.info-icon {
+  margin-right: 8rpx;
+  font-size: 24rpx;
+}
+
+/* 地图区域 */
+.map-wrap {
+  position: relative;
+  border-radius: 32rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.05);
+  border: 1rpx solid rgba(0,0,0,0.04);
+}
+
+.checkin-map {
+  width: 100%;
+  height: 560rpx;
+}
+
+/* 刷新按钮 */
+.refresh-btn {
+  position: absolute;
+  right: 24rpx;
+  bottom: 24rpx;
+  width: 80rpx; height: 80rpx;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.12);
+}
+
+.refresh-icon {
+  width: 40rpx; height: 40rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.5 2v6h-6'/%3E%3Cpath d='M21.34 15.57a10 10 0 1 1-.57-8.38'/%3E%3C/svg%3E");
+}
+
+/* 距离信息 */
+.distance-wrap {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.distance-text {
+  font-size: 28rpx;
+  color: #999;
+  font-weight: 500;
+}
+
+.distance-text.in-range {
+  color: #07c160;
+}
+
+.distance-text.out-range {
+  color: #fa8c16;
+}
+
+.distance-text.error {
+  color: #ff4d4f;
+}
+
+/* 打卡按钮 */
+.checkin-btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.checkin-btn {
+  width: 400rpx;
+  padding: 28rpx 0;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.checkin-btn.active {
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  box-shadow: 0 8rpx 32rpx rgba(37,99,235,0.35);
+}
+
+.checkin-btn.disabled {
+  background: #d9d9d9;
+}
+
+.checkin-btn.done {
+  background: #07c160;
+}
+
+.checkin-btn-text {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 2rpx;
+  line-height: 1;
+}
+
+.checkin-hint {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 24rpx;
+}
+
+/* 加载中 */
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 400rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #999;
+}

@@ -1,0 +1,260 @@
+<view class="page">
+  <view class="header-gradient"></view>
+
+  <!-- 顶部 Tab -->
+  <view class="tabs" style="padding-top: {{navPaddingTop}}px;">
+    <view class="tab {{activeTab === 'center' ? 'active' : ''}}" bindtap="switchTab" data-tab="center">学习中心</view>
+    <view class="tab {{activeTab === 'myClass' ? 'active' : ''}}" bindtap="switchTab" data-tab="myClass">我的班级</view>
+    <view class="tab {{activeTab === 'schedule' ? 'active' : ''}}" bindtap="switchTab" data-tab="schedule">课表</view>
+  </view>
+
+  <!-- 学习中心 -->
+  <scroll-view class="tab-content" scroll-y wx:if="{{activeTab === 'center'}}">
+    <!-- 未登录引导 -->
+    <view class="login-guide" wx:if="{{!isLoggedIn}}">
+      <view class="login-guide-icon-wrap">
+        <view class="login-guide-svg"></view>
+      </view>
+      <text class="login-guide-text">登录后查看你的课程安排</text>
+      <view class="login-guide-btn" bindtap="goLogin">去登录</view>
+    </view>
+
+    <!-- 已登录内容 -->
+    <view wx:else>
+    <!-- 今日课程 -->
+    <view class="section-header">
+      <text class="section-title">今日课程</text>
+    </view>
+    <scroll-view class="today-courses" scroll-x wx:if="{{todayCourses.length > 0}}">
+      <view class="today-card {{item.theme}}" wx:for="{{todayCourses}}" wx:key="id">
+        <text class="today-time">{{item.time}}</text>
+        <text class="today-name">{{item.title}}</text>
+        <view class="today-teacher">
+          <text class="teacher-icon">👤</text>
+          <text>{{item.teacher}}</text>
+        </view>
+        <view class="today-location">
+          <text class="location-icon">◎</text>
+          <text>{{item.location}}</text>
+        </view>
+        <view wx:if="{{item.expired && !item.checkedIn}}" class="today-btn expired">已过期</view>
+                <view wx:elif="{{!item.checkedIn}}" class="today-btn {{item.theme}}" bindtap="goCheckin" data-id="{{item.id}}">去打卡</view>
+        <view wx:elif="{{!item.hasReviewed}}" class="today-btn review" bindtap="goReview" data-id="{{item.id}}">去评价</view>
+        <view wx:else class="today-btn checked">已完成</view>
+      </view>
+    </scroll-view>
+    <view class="today-empty" wx:else>
+      <text class="today-empty-text">今日暂无课程安排</text>
+    </view>
+
+    <!-- 学习笔记 -->
+    <view class="section-header" style="margin-top: 40rpx;">
+      <text class="section-title">学习笔记</text>
+      <view class="publish-btn" bindtap="goPublishNote">
+        <text class="publish-icon">✎</text>
+        <text class="publish-text">发布笔记</text>
+      </view>
+    </view>
+
+    <!-- 笔记 scope 切换 -->
+    <view class="note-scope-tabs">
+      <view class="note-scope-tab {{noteScope === 'classmates' ? 'active' : ''}}" bindtap="switchNoteScope" data-scope="classmates">同班笔记</view>
+      <view class="note-scope-tab {{noteScope === 'all' ? 'active' : ''}}" bindtap="switchNoteScope" data-scope="all">全部笔记</view>
+    </view>
+
+    <view class="note-list">
+      <view class="note-card" wx:for="{{notes}}" wx:key="id" bindtap="goNoteDetail" data-id="{{item.id}}">
+        <!-- 用户信息 -->
+        <view class="note-header">
+          <view class="note-user">
+            <image class="note-avatar" src="{{item.avatar}}" mode="aspectFill" />
+            <view class="note-user-info">
+              <text class="note-username">{{item.username}}</text>
+              <text class="note-time">{{item.timeAgo}}</text>
+            </view>
+          </view>
+          <view class="note-course-tag" wx:if="{{item.courseName}}">{{item.courseName}}</view>
+        </view>
+        <!-- 笔记内容 -->
+        <view class="note-content line-clamp-3">{{item.content}}</view>
+        <!-- 笔记图片 -->
+        <view class="note-images" wx:if="{{item.images.length > 0}}">
+          <image
+            class="note-img"
+            wx:for="{{item.images}}"
+            wx:for-item="img"
+            wx:key="*this"
+            src="{{img}}"
+            mode="aspectFill"
+            bindtap="previewImage"
+            data-urls="{{item.images}}"
+            data-current="{{img}}"
+          />
+        </view>
+        <!-- 操作栏 -->
+        <view class="note-actions" catchtap="">
+          <view class="note-action {{item.isLiked ? 'liked' : ''}}" catchtap="likeNote" data-id="{{item.id}}">
+            <view class="action-svg {{item.isLiked ? 'svg-heart-filled' : 'svg-heart'}}"></view>
+            <text>{{item.likes}}</text>
+          </view>
+          <view class="note-action" catchtap="goNoteDetail" data-id="{{item.id}}">
+            <view class="action-svg svg-comment"></view>
+            <text>{{item.comments}}</text>
+          </view>
+          <view class="note-action {{item.isFavorited ? 'favorited' : ''}}" catchtap="favoriteNote" data-id="{{item.id}}">
+            <view class="action-svg {{item.isFavorited ? 'svg-star-filled' : 'svg-star'}}"></view>
+            <text>{{item.isFavorited ? '已收藏' : '收藏'}}</text>
+          </view>
+          <button class="note-action share-action" open-type="share" data-id="{{item.id}}" catchtap="">
+            <view class="action-svg svg-share"></view>
+            <text>转发</text>
+          </button>
+        </view>
+      </view>
+
+      <view class="load-more" wx:if="{{noteHasMore && notes.length > 0}}" bindtap="loadMoreNotes">
+        <text class="load-more-text">{{noteLoading ? '加载中...' : '加载更多'}}</text>
+      </view>
+      <view class="note-empty" wx:if="{{notes.length === 0 && !noteLoading}}">
+        <text class="note-empty-text">还没有笔记，快去发布第一篇吧~</text>
+      </view>
+    </view>
+    </view>
+  </scroll-view>
+
+  <!-- 我的班级 -->
+  <scroll-view class="tab-content" scroll-y wx:if="{{activeTab === 'myClass'}}">
+    <!-- 未登录 -->
+    <view class="login-guide" wx:if="{{!isLoggedIn}}">
+      <text class="login-guide-text">登录后查看你的班级</text>
+      <view class="login-guide-btn" bindtap="goLogin">去登录</view>
+    </view>
+    <!-- 班级列表 -->
+    <view wx:elif="{{myClassGroups.length > 0}}">
+      <view class="class-card" wx:for="{{myClassGroups}}" wx:key="id" bindtap="goClassGroupDetail" data-id="{{item.id}}">
+        <image class="class-cover" src="{{item.course.coverImage || ''}}" mode="aspectFill" />
+        <view class="class-info">
+          <view class="class-name-row">
+            <text class="class-name">{{item.name}}</text>
+            <view class="class-status-tag {{item.status}}">{{item.status === 'forming' ? '组建中' : item.status === 'scheduled' ? '已排课' : item.status === 'active' ? '开课中' : '已结业'}}</view>
+          </view>
+          <text class="class-course">{{item.course.name}}</text>
+          <view class="class-meta">
+            <text class="class-meta-item">{{item.studentCount}}人</text>
+            <text class="class-meta-item">{{item.scheduleCount}}节课</text>
+          </view>
+        </view>
+        <view class="class-arrow">›</view>
+      </view>
+    </view>
+    <!-- 空状态 -->
+    <view class="class-empty" wx:elif="{{!classGroupLoading}}">
+      <text class="class-empty-text">你还没有加入任何班级</text>
+      <view class="empty-btn" bindtap="goSelectCourse">去选课</view>
+    </view>
+  </scroll-view>
+
+  <!-- 课表 -->
+  <view class="tab-content" wx:if="{{activeTab === 'schedule'}}">
+    <!-- 月份 + 回到今日 -->
+    <view class="calendar-header">
+      <text class="calendar-month">{{calendarYear}}年{{calendarMonth}}月</text>
+      <view class="back-today-btn" bindtap="backToToday">回到今日</view>
+    </view>
+
+    <!-- 星期头 -->
+    <view class="week-header">
+      <text class="week-day" wx:for="{{weekDays}}" wx:key="*this">{{item}}</text>
+    </view>
+
+    <!-- 日期行：周视图 -->
+    <view class="date-row" wx:if="{{!calendarExpanded}}">
+      <view
+        class="date-cell {{item.isSelected ? 'selected' : ''}} {{item.isToday ? 'today' : ''}}"
+        wx:for="{{weekDates}}"
+        wx:key="date"
+        bindtap="selectDate"
+        data-date="{{item.date}}"
+      >
+        <text wx:if="{{item.isToday}}">今</text>
+        <text wx:else>{{item.day}}</text>
+        <view class="course-dot" wx:if="{{item.hasCourse && !item.isSelected}}"></view>
+      </view>
+    </view>
+
+    <!-- 日期行：月视图 -->
+    <block wx:if="{{calendarExpanded}}">
+      <view class="date-row" wx:for="{{monthDates}}" wx:for-item="row" wx:key="index">
+        <view
+          class="date-cell {{cell.isSelected ? 'selected' : ''}} {{cell.isToday ? 'today' : ''}} {{!cell.isCurrentMonth ? 'other-month' : ''}}"
+          wx:for="{{row}}"
+          wx:for-item="cell"
+          wx:key="date"
+          bindtap="selectDate"
+          data-date="{{cell.date}}"
+        >
+          <text wx:if="{{cell.isToday}}">今</text>
+          <text wx:else>{{cell.day}}</text>
+          <view class="course-dot" wx:if="{{cell.hasCourse && !cell.isSelected}}"></view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 展开 -->
+    <view class="expand-row" bindtap="toggleCalendar">
+      <text class="expand-text">{{calendarExpanded ? '收起' : '展开'}}</text>
+      <text class="expand-arrow">{{calendarExpanded ? '∧' : '∨'}}</text>
+    </view>
+
+    <!-- 课程内容区 -->
+    <view class="schedule-content">
+      <view class="schedule-date-title">
+        <view class="date-indicator"></view>
+        <text>{{selectedMonth}}月{{selectedDay}}日 {{scheduleCourses.length > 0 ? '' : '暂无课程'}}</text>
+      </view>
+
+      <!-- 有课程 -->
+      <view wx:if="{{scheduleCourses.length > 0}}">
+        <view class="schedule-item" wx:for="{{scheduleCourses}}" wx:key="id">
+          <view class="schedule-time">{{item.time}}</view>
+          <view class="schedule-info">
+            <text class="schedule-name">{{item.title}}</text>
+            <text class="schedule-teacher">{{item.teacher}}</text>
+            <text class="schedule-location">{{item.location}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:else>
+        <view class="empty-icon-wrap">
+          <view class="empty-svg"></view>
+        </view>
+        <text class="empty-text">本日内暂无课程</text>
+        <view class="empty-btn" bindtap="goSelectCourse">去选课</view>
+        <text class="empty-hint">往上拖动可以查看下一天课程</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 评价弹窗 -->
+<view class="review-mask" wx:if="{{showReviewModal}}" bindtap="closeReviewModal"></view>
+<view class="review-modal" wx:if="{{showReviewModal}}">
+  <view class="review-modal-header">
+    <text class="review-modal-title">课后评价</text>
+    <view class="review-modal-close" bindtap="closeReviewModal">✕</view>
+  </view>
+  <view class="review-stars">
+    <text class="review-star-label">评分</text>
+    <view class="review-star-row">
+      <view class="review-star" wx:for="{{[1,2,3,4,5]}}" wx:key="*this" bindtap="setReviewRating" data-rating="{{item}}">
+        <text class="star-icon {{reviewRating >= item ? 'active' : ''}}">★</text>
+      </view>
+    </view>
+  </view>
+  <textarea class="review-textarea" placeholder="分享你的上课感受（选填）" maxlength="500" value="{{reviewContent}}" bindinput="setReviewContent" />
+  <view class="review-submit-btn {{reviewSubmitting ? 'disabled' : ''}}" bindtap="submitReview">{{reviewSubmitting ? '提交中...' : '提交评价'}}</view>
+</view>
+
+<popup visible="{{popupVisible}}" popup-data="{{popupData}}" bind:close="onPopupClose" />

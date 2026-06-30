@@ -1,0 +1,127 @@
+<view class="page">
+  <!-- 头部渐变背景 -->
+  <view class="header-gradient"></view>
+
+  <!-- 未登录状态 -->
+  <view wx:if="{{!isLoggedIn}}" class="profile-section" style="padding-top: {{navPaddingTop}}px;">
+    <view class="profile-top" bindtap="goLogin">
+      <view class="avatar-wrap">
+        <view class="avatar-placeholder">
+          <text class="avatar-placeholder-text">登录</text>
+        </view>
+      </view>
+      <view class="profile-info">
+        <text class="username">点击登录</text>
+        <view class="badges">
+          <text class="checkin-text">登录后查看更多内容</text>
+        </view>
+      </view>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 已登录状态 -->
+  <view wx:else class="profile-section" style="padding-top: {{navPaddingTop}}px;">
+    <view class="profile-top">
+      <view class="avatar-wrap" bindtap="goEditProfile">
+        <image wx:if="{{userInfo.avatarUrl}}" class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar-placeholder">
+          <text class="avatar-placeholder-text">{{userInfo.nickname[0] || '趣'}}</text>
+        </view>
+      </view>
+      <view class="profile-info" bindtap="goEditProfile">
+        <text class="username">{{userInfo.nickname}}</text>
+      </view>
+      <view class="msg-btn" bindtap="goMessage">
+        <view class="msg-icon"></view>
+        <view wx:if="{{unreadCount > 0}}" class="msg-badge">{{unreadCount > 99 ? '99+' : unreadCount}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="container">
+    <!-- 数据统计卡片（3列） -->
+    <view class="stats-card" wx:if="{{isLoggedIn && userInfo}}">
+      <view class="stat-item" bindtap="goStudyCourses">
+        <text class="stat-num">{{userInfo.courseCount}}</text>
+        <text class="stat-label">在学课程</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item" bindtap="goMyNotes">
+        <text class="stat-num">{{userInfo.noteCount}}</text>
+        <text class="stat-label">我的笔记</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-num">{{userInfo.likeCount}}</text>
+        <text class="stat-label">获赞</text>
+      </view>
+    </view>
+
+    <!-- 功能宫格（2×2） -->
+    <view class="grid-card" wx:if="{{isLoggedIn}}">
+      <view class="grid-item" bindtap="goMyFavorites">
+        <view class="grid-icon grid-icon-star"></view>
+        <text class="grid-text">我的收藏</text>
+      </view>
+      <view class="grid-item" bindtap="goOrders">
+        <view class="grid-icon grid-icon-order"></view>
+        <text class="grid-text">我的订单</text>
+      </view>
+      <view class="grid-item" bindtap="goCredits">
+        <view class="grid-icon credit-card-num">{{userInfo.credit || 0}}</view>
+        <text class="grid-text">我的学分</text>
+      </view>
+      <view class="grid-item" bindtap="goMyTrials">
+        <view class="grid-icon grid-icon-trial"></view>
+        <text class="grid-text">我的试听</text>
+      </view>
+    </view>
+
+    <!-- 菜单组 2：成为老师 / 提供场地 -->
+    <view class="menu-group">
+      <view class="menu-item" bindtap="goApplyTeacher">
+        <view class="menu-icon orange-icon icon-teacher"></view>
+        <text class="menu-text">成为老师</text>
+        <text class="menu-desc">分享技能，赚取收入</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-divider"></view>
+      <view class="menu-item" bindtap="goApplyVenue">
+        <view class="menu-icon purple-icon icon-venue"></view>
+        <text class="menu-text">提供场地</text>
+        <text class="menu-desc">闲置空间变现</text>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 菜单组 3：联系客服 / 意见反馈 / 关于我们 -->
+    <view class="menu-group">
+      <view class="menu-item" bindtap="contactService">
+        <view class="menu-icon gray-icon icon-service"></view>
+        <text class="menu-text">联系客服</text>
+        <text class="menu-desc">400-000-000</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-divider"></view>
+      <view class="menu-item" bindtap="goFeedback">
+        <view class="menu-icon gray-icon icon-feedback"></view>
+        <text class="menu-text">意见反馈</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-divider"></view>
+      <view class="menu-item" bindtap="goAbout">
+        <view class="menu-icon gray-icon icon-about"></view>
+        <text class="menu-text">关于我们</text>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 退出登录按钮（仅登录后显示） -->
+    <view class="logout-section" wx:if="{{isLoggedIn}}">
+      <view class="logout-btn" bindtap="onLogout">退出登录</view>
+    </view>
+  </view>
+</view>
+
+<popup visible="{{popupVisible}}" popup-data="{{popupData}}" bind:close="onPopupClose" />

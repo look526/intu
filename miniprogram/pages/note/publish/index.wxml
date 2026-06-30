@@ -1,0 +1,89 @@
+<view class="page">
+  <!-- 头部渐变背景 -->
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">发布笔记</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content-wrap">
+    <!-- 文本输入卡片 -->
+    <view class="card input-card">
+      <textarea
+        class="content-input"
+        placeholder="分享你的学习心得..."
+        maxlength="1000"
+        bindinput="onContentInput"
+        value="{{content}}"
+        auto-height
+      />
+      <text class="char-count">{{content.length}}/1000</text>
+    </view>
+
+    <!-- 图片选择卡片 -->
+    <view class="card image-card" wx:if="{{images.length > 0 || true}}">
+      <view class="card-label">
+        <view class="label-icon">
+          <view class="label-svg label-svg-image"></view>
+        </view>
+        <text>图片</text>
+      </view>
+      <view class="image-grid">
+        <view class="image-item" wx:for="{{images}}" wx:key="*this">
+          <image class="preview-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-idx="{{index}}" />
+          <view class="remove-btn" bindtap="removeImage" data-idx="{{index}}">×</view>
+        </view>
+        <view class="add-image-btn" wx:if="{{images.length < 9}}" bindtap="chooseImages">
+          <view class="add-svg"></view>
+          <text class="add-text">添加</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 谁可以看 -->
+    <view class="card visibility-card">
+      <view class="card-label">
+        <view class="label-icon">
+          <view class="label-svg label-svg-eye"></view>
+        </view>
+        <text>谁可以看</text>
+      </view>
+      <view class="visibility-options">
+        <view class="vis-option {{visibility==='all'?'active':''}}" bindtap="onVisibilityChange" data-value="all">全部可见</view>
+        <view class="vis-option {{visibility==='class'?'active':''}}" bindtap="onVisibilityChange" data-value="class">本班级</view>
+        <view class="vis-option {{visibility==='course'?'active':''}}" bindtap="onVisibilityChange" data-value="course">本课程</view>
+      </view>
+
+      <!-- 本班级：选择班级 -->
+      <view class="picker-row" wx:if="{{visibility === 'class'}}">
+        <picker mode="selector" range="{{myClassGroups}}" range-key="name" bindchange="onClassGroupChange">
+          <view class="picker-inner">
+            <text class="picker-text {{classGroupId ? '' : 'placeholder'}}">{{selectedClassName || '请选择班级'}}</text>
+            <view class="picker-arrow"></view>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 本课程：选择课程 -->
+      <view class="picker-row" wx:if="{{visibility === 'course'}}">
+        <picker mode="selector" range="{{myCourses}}" range-key="name" bindchange="onCourseChange">
+          <view class="picker-inner">
+            <text class="picker-text {{courseId ? '' : 'placeholder'}}">{{selectedCourseName || '请选择课程'}}</text>
+            <view class="picker-arrow"></view>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 发布按钮 -->
+    <view class="submit-btn {{submitting || content.length === 0 ? 'disabled' : ''}}" bindtap="submitNote">
+      {{submitting ? '发布中...' : '发布笔记'}}
+    </view>
+  </view>
+</view>

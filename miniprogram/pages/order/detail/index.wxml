@@ -1,0 +1,83 @@
+<view class="page">
+  <!-- 自定义导航栏（覆盖在状态区上方） -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">订单详情</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <text>加载中...</text>
+  </view>
+
+  <view wx:elif="{{order}}" class="detail-content">
+    <!-- 订单状态 -->
+    <view class="status-section status-bg-{{order.status}}">
+      <view class="status-icon-wrap">
+        <view class="status-svg status-svg-{{order.status}}"></view>
+      </view>
+      <text class="status-title">
+        {{order.status === 'pending' ? '待付款' : order.status === 'paid' ? '已付款' : '已取消'}}
+      </text>
+      <text class="status-desc" wx:if="{{order.status === 'pending'}}">请联系工作人员线下付款</text>
+      <text class="status-desc" wx:if="{{order.status === 'paid'}}">付款成功，祝学习愉快</text>
+      <text class="status-desc" wx:if="{{order.status === 'cancelled'}}">订单已取消</text>
+    </view>
+
+    <!-- 课程信息 -->
+    <view class="info-card">
+      <view class="card-title">
+        <view class="title-indicator"></view>
+        <text>课程信息</text>
+      </view>
+      <view class="course-row">
+        <image
+          class="course-cover"
+          src="{{order.course.coverImage || '/assets/tabbar/course.png'}}"
+          mode="aspectFill"
+        />
+        <view class="course-detail">
+          <text class="course-name">{{order.course.name}}</text>
+          <text class="course-teacher" wx:if="{{order.course.teacher}}">教师: {{order.course.teacher.realName}}</text>
+          <text class="course-hours">{{order.course.totalHours}} 课时</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 订单信息 -->
+    <view class="info-card">
+      <view class="card-title">
+        <view class="title-indicator"></view>
+        <text>订单信息</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">订单号</text>
+        <text class="info-value">{{order.id}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">下单时间</text>
+        <text class="info-value">{{order.createdAt}}</text>
+      </view>
+      <view class="info-row" wx:if="{{order.paidAt}}">
+        <text class="info-label">付款时间</text>
+        <text class="info-value">{{order.paidAt}}</text>
+      </view>
+      <view class="info-row price-row">
+        <text class="info-label">订单金额</text>
+        <text class="info-value price-value">¥{{order.amount}}</text>
+      </view>
+    </view>
+
+    <!-- 底部操作 -->
+    <view class="action-area" wx:if="{{order.status === 'pending'}}">
+      <view class="action-btn-cancel" bindtap="onCancelOrder">取消订单</view>
+      <view class="action-btn-contact" bindtap="onContact">联系付款</view>
+    </view>
+
+    <view class="action-area" wx:if="{{order.status !== 'pending'}}">
+      <view class="action-btn-back" bindtap="goOrderList">查看全部订单</view>
+    </view>
+  </view>
+</view>

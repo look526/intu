@@ -1,0 +1,134 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="top-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">笔记详情</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 主体滚动区 -->
+  <scroll-view
+    class="main-scroll"
+    scroll-y
+    scroll-top="{{scrollTop}}"
+    style="padding-top: {{navPaddingTop + 44}}px;"
+    wx:if="{{note}}"
+  >
+    <!-- 作者信息 -->
+    <view class="author-card">
+      <image class="author-avatar" src="{{note.avatar}}" mode="aspectFill" />
+      <view class="author-info">
+        <text class="author-name">{{note.username}}</text>
+        <text class="author-time">{{note.timeAgo}}</text>
+      </view>
+      <view class="course-chip" wx:if="{{note.courseName}}">
+        <view class="chip-dot"></view>
+        <text class="chip-text">{{note.courseName}}</text>
+      </view>
+    </view>
+
+    <!-- 笔记正文 -->
+    <view class="note-body">{{note.content}}</view>
+
+    <!-- 图片列表 -->
+    <view class="note-images" wx:if="{{note.images.length > 0}}">
+      <image
+        wx:for="{{note.images}}"
+        wx:key="*this"
+        class="note-img"
+        src="{{item}}"
+        mode="widthFix"
+        bindtap="previewImage"
+        data-urls="{{note.images}}"
+        data-current="{{item}}"
+      />
+    </view>
+
+    <!-- 互动数据 -->
+    <view class="stats-row">
+      <view class="stat-item {{note.isLiked ? 'active' : ''}}" bindtap="toggleLike">
+        <view class="stat-icon {{note.isLiked ? 'icon-heart-filled' : 'icon-heart'}}"></view>
+        <text class="stat-text">{{note.likes}} 赞</text>
+      </view>
+      <view class="stat-item">
+        <view class="stat-icon icon-comment"></view>
+        <text class="stat-text">{{note.comments}} 评论</text>
+      </view>
+      <view class="stat-item {{note.isFavorited ? 'active' : ''}}" bindtap="toggleFavorite">
+        <view class="stat-icon {{note.isFavorited ? 'icon-star-filled' : 'icon-star'}}"></view>
+        <text class="stat-text">{{note.isFavorited ? '已收藏' : '收藏'}}</text>
+      </view>
+      <button class="stat-item share-btn-inline" open-type="share">
+        <view class="stat-icon icon-share"></view>
+        <text class="stat-text">分享</text>
+      </button>
+    </view>
+
+    <!-- 评论区 -->
+    <view class="comment-section">
+      <view class="section-header">
+        <text class="section-title">评论 ({{note.comments}})</text>
+      </view>
+      <view class="comment-list">
+        <view class="comment-item" wx:for="{{note.formattedComments}}" wx:key="id">
+          <image class="c-avatar" src="{{item.avatar}}" mode="aspectFill" />
+          <view class="c-body">
+            <view class="c-top">
+              <text class="c-name">{{item.username}}</text>
+              <text class="c-time">{{item.timeAgo}}</text>
+            </view>
+            <text class="c-text">{{item.content}}</text>
+          </view>
+        </view>
+        <view class="comment-empty" wx:if="{{!note.formattedComments || note.formattedComments.length === 0}}">
+          <text class="empty-text">暂无评论，快来说两句~</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 推荐笔记 -->
+    <view class="recommend-section" wx:if="{{recommendList.length > 0}}">
+      <view class="section-header">
+        <text class="section-title">推荐笔记</text>
+      </view>
+      <view class="recommend-list">
+        <view
+          class="recommend-card"
+          wx:for="{{recommendList}}"
+          wx:key="id"
+          bindtap="goRecommendNote"
+          data-id="{{item.id}}"
+        >
+          <image class="rec-cover" wx:if="{{item.coverImage}}" src="{{item.coverImage}}" mode="aspectFill" />
+          <view class="rec-content">
+            <text class="rec-text">{{item.content}}</text>
+            <view class="rec-meta">
+              <text class="rec-author">{{item.username}}</text>
+              <text class="rec-likes">{{item.likes}} 赞</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部安全区占位 -->
+    <view style="height: 140rpx;"></view>
+  </scroll-view>
+
+  <!-- 底部评论输入栏 -->
+  <view class="bottom-bar" wx:if="{{note}}">
+    <input
+      class="bar-input"
+      placeholder="写评论..."
+      value="{{commentText}}"
+      bindinput="onCommentInput"
+      confirm-type="send"
+      bindconfirm="submitComment"
+    />
+    <view class="send-btn {{commentText.length > 0 ? '' : 'disabled'}}" bindtap="submitComment">
+      发送
+    </view>
+  </view>
+</view>

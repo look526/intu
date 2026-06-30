@@ -1,0 +1,59 @@
+<view class="page">
+  <!-- 自定义导航栏（白色文字，覆盖在蓝色头部上） -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">学分明细</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 顶部学分展示 -->
+  <view class="credit-header">
+    <view class="credit-icon-wrap">
+      <view class="credit-svg"></view>
+    </view>
+    <text class="credit-label">总学分</text>
+    <text class="credit-num">{{credits}}</text>
+    <text class="credit-hint">完成课程打卡即可获得学分</text>
+  </view>
+
+  <!-- 打卡记录列表 -->
+  <view class="record-list" wx:if="{{records.length > 0}}">
+    <view class="list-title">打卡记录</view>
+    <view class="record-card" wx:for="{{records}}" wx:key="id">
+      <view class="record-left">
+        <view class="record-dot {{item.locationValid ? 'dot-valid' : 'dot-invalid'}}"></view>
+      </view>
+      <view class="record-main">
+        <view class="record-top">
+          <text class="record-course">{{item.courseName}}</text>
+          <view class="record-badge {{item.locationValid ? 'valid' : 'invalid'}}">
+            {{item.locationValid ? '+' + item.creditEarned + '学分' : '未获学分'}}
+          </view>
+        </view>
+        <view class="record-info">
+          <text class="record-location">{{item.classroomName}} ({{item.venueName}})</text>
+        </view>
+        <text class="record-time">{{item.checkinTime}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:elif="{{!loading}}">
+    <view class="empty-icon-wrap">
+      <view class="empty-svg"></view>
+    </view>
+    <text class="empty-text">暂无打卡记录</text>
+    <text class="empty-hint">完成课程打卡可获得学分</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-tip" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+  <view class="loading-tip" wx:elif="{{!hasMore && records.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</view>

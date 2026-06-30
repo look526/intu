@@ -1,0 +1,142 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-arrow"></view>
+    </view>
+    <text class="nav-title">教师详情</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <text>加载中...</text>
+  </view>
+
+  <view wx:elif="{{teacher}}" class="detail-content">
+
+    <!-- 个人名片卡 -->
+    <view class="profile-card">
+      <image class="profile-avatar" src="{{teacher.avatarUrl}}" mode="aspectFill" wx:if="{{teacher.avatarUrl}}" />
+      <view class="profile-avatar profile-avatar-placeholder" wx:else>
+        <text class="profile-avatar-text">{{teacher.realName[0]}}</text>
+      </view>
+      <text class="profile-name">{{teacher.realName}}</text>
+      <view class="profile-meta">
+        <view class="profile-rating" wx:if="{{teacher.rating > 0}}">
+          <text class="star-icon">★</text>
+          <text class="rating-value">{{teacher.ratingText}}</text>
+        </view>
+        <text class="profile-meta-sep" wx:if="{{teacher.rating > 0 && teacher.teachingYearsText}}">·</text>
+        <text class="profile-years" wx:if="{{teacher.teachingYearsText}}">{{teacher.teachingYearsText}}</text>
+      </view>
+      <!-- 擅长标签 -->
+      <view class="profile-tags" wx:if="{{teacher.specialtiesList.length}}">
+        <view class="spec-tag" wx:for="{{teacher.specialtiesList}}" wx:key="*this">{{item}}</view>
+      </view>
+      <!-- 数据统计 -->
+      <view class="profile-stats">
+        <view class="stat-item">
+          <text class="stat-num">{{teacher.courseCount || 0}}</text>
+          <text class="stat-label">开设课程</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-num">{{teacher.reviewCount || 0}}</text>
+          <text class="stat-label">学员评价</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-num">{{teacher.scheduleCount || 0}}</text>
+          <text class="stat-label">累计课次</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 个人简介 -->
+    <view class="section" wx:if="{{teacher.bio}}">
+      <text class="section-title">个人简介</text>
+      <text class="bio-text {{bioExpanded ? '' : 'bio-collapsed'}}">{{teacher.bio}}</text>
+      <view class="bio-toggle" bindtap="toggleBio" wx:if="{{teacher.bio.length > 80}}">
+        <text class="toggle-text">{{bioExpanded ? '收起' : '展开更多'}}</text>
+        <text class="toggle-arrow">{{bioExpanded ? '∧' : '∨'}}</text>
+      </view>
+    </view>
+
+    <!-- 自我介绍视频 -->
+    <view class="section" wx:if="{{teacher.introVideoUrl}}">
+      <text class="section-title">自我介绍</text>
+      <view class="video-wrap">
+        <video
+          class="intro-video"
+          src="{{teacher.introVideoUrl}}"
+          poster="{{teacher.avatarUrl}}"
+          controls
+          object-fit="cover"
+          show-center-play-btn
+        ></video>
+      </view>
+    </view>
+
+    <!-- 资质证书 -->
+    <view class="section" wx:if="{{certificateImages.length > 0}}">
+      <text class="section-title">资质证书</text>
+      <scroll-view class="gallery-scroll" scroll-x>
+        <image
+          class="gallery-img"
+          wx:for="{{certificateImages}}" wx:key="*this"
+          src="{{item}}"
+          mode="aspectFill"
+          bindtap="previewCertificate"
+          data-idx="{{index}}"
+        />
+      </scroll-view>
+    </view>
+
+    <!-- 教学作品 -->
+    <view class="section" wx:if="{{portfolioImages.length > 0}}">
+      <text class="section-title">教学作品</text>
+      <view class="portfolio-grid">
+        <image
+          class="portfolio-img"
+          wx:for="{{portfolioImages}}" wx:key="*this"
+          src="{{item}}"
+          mode="aspectFill"
+          bindtap="previewPortfolio"
+          data-idx="{{index}}"
+        />
+      </view>
+    </view>
+
+    <!-- 开设课程 -->
+    <view class="section" wx:if="{{teacher.courses.length > 0}}">
+      <text class="section-title">开设课程</text>
+      <view class="course-list">
+        <view class="course-card" wx:for="{{teacher.courses}}" wx:key="id" bindtap="goCourseDetail" data-id="{{item.id}}">
+          <image class="course-cover" src="{{item.coverImage}}" mode="aspectFill" wx:if="{{item.coverImage}}" />
+          <view class="course-cover course-cover-placeholder" wx:else>
+            <text class="cover-placeholder-text">{{item.name[0]}}</text>
+          </view>
+          <view class="course-info">
+            <text class="course-name">{{item.name}}</text>
+            <text class="course-meta">{{item.category.name}} · {{item.totalHours}}课时</text>
+            <text class="course-desc" wx:if="{{item.description}}">{{item.description}}</text>
+          </view>
+          <text class="course-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 底部操作栏 -->
+  <!-- <view class="action-bar" wx:if="{{teacher}}">
+    <view class="action-btn btn-consult" bindtap="onConsult">
+      <text class="btn-consult-icon">📞</text>
+      <text>咨询</text>
+    </view>
+    <view class="action-btn btn-primary" bindtap="goCourseDetail" data-id="{{teacher.courses[0].id}}" wx:if="{{teacher.courses.length > 0}}">
+      <text>查看课程</text>
+    </view>
+  </view> -->
+</view>

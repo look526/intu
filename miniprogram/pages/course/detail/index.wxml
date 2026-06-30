@@ -1,0 +1,198 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    <text class="nav-title">课程详情</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <text>加载中...</text>
+  </view>
+
+  <view wx:elif="{{course}}" class="detail-content">
+    <!-- 封面 -->
+    <image class="cover-image" src="{{course.coverImage}}" mode="aspectFill" wx:if="{{course.coverImage}}" />
+
+    <!-- 基本信息 -->
+    <view class="info-section">
+      <view class="course-header">
+        <text class="course-name">{{course.name}}</text>
+        <view class="tag" style="background: #2563EB;">{{course.category.name}}</view>
+      </view>
+      <view class="meta-row">
+        <text class="meta-item">{{course.totalHours}} 课时</text>
+        <text class="meta-item">{{course.status === 'published' ? '招生中' : '未开放'}}</text>
+      </view>
+    </view>
+
+    <!-- 教师信息 -->
+    <view class="section">
+      <text class="section-title">授课教师</text>
+      <view class="teacher-card" bindtap="goTeacherDetail" data-id="{{course.teacher.id}}">
+        <view class="teacher-avatar">
+          <text class="avatar-text">{{course.teacher.realName[0]}}</text>
+        </view>
+        <view class="teacher-info">
+          <text class="teacher-name">{{course.teacher.realName}}</text>
+          <text class="teacher-bio" wx:if="{{course.teacher.bio}}">{{course.teacher.bio}}</text>
+          <text class="teacher-rating" wx:if="{{course.teacher.rating}}">评分 {{course.teacher.rating}}</text>
+        </view>
+        <text class="teacher-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 课程描述 -->
+    <view class="section" wx:if="{{course.description}}">
+      <text class="section-title">课程介绍</text>
+      <text class="description">{{course.description}}</text>
+    </view>
+
+    <!-- 课程评价 -->
+    <view class="section">
+      <view class="review-section-header">
+        <text class="section-title">课程评价</text>
+        <text class="review-count" wx:if="{{reviewTotal > 0}}">{{reviewTotal}}条评价</text>
+      </view>
+      <view wx:if="{{reviews.length > 0}}">
+        <view class="review-card" wx:for="{{reviews}}" wx:key="id">
+          <view class="review-user">
+            <image class="review-avatar" src="{{item.avatar}}" mode="aspectFill" wx:if="{{item.avatar}}" />
+            <view class="review-avatar-placeholder" wx:else>
+              <text>{{item.nickname[0]}}</text>
+            </view>
+            <view class="review-user-info">
+              <text class="review-nickname">{{item.nickname}}</text>
+              <view class="review-rating-stars">
+                <text class="review-star" wx:for="{{[1,2,3,4,5]}}" wx:for-item="star" wx:key="*this" style="color: {{item.rating >= star ? '#faad14' : '#ddd'}}">★</text>
+              </view>
+            </view>
+            <text class="review-date">{{item.date}}</text>
+          </view>
+          <text class="review-content" wx:if="{{item.content}}">{{item.content}}</text>
+        </view>
+      </view>
+      <view class="review-empty" wx:else>
+        <text class="review-empty-text">暂无评价</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部悬浮操作栏 -->
+  <view class="action-bar" wx:if="{{course}}">
+    <view class="action-btn btn-consult" bindtap="onConsult">
+      <view class="btn-icon icon-phone"></view>
+      <text>咨询</text>
+    </view>
+    <view class="action-btn btn-trial" bindtap="onTrial">
+      <text>免费试听</text>
+    </view>
+    <view class="action-btn btn-buy" bindtap="onBuy">
+      <text>¥{{course.price || '0'}} 购买</text>
+    </view>
+  </view>
+
+  <!-- 试听预约弹窗 -->
+  <view class="modal-mask" wx:if="{{showTrialModal}}" bindtap="closeTrialModal">
+    <view class="modal-card" catchtap="noop">
+      <!-- 成功状态 -->
+      <block wx:if="{{trialSuccess}}">
+        <view class="trial-success">
+          <view class="success-icon">✓</view>
+          <text class="success-title">预约成功！</text>
+          <text class="success-desc">客服人员将会与您联系，请保持手机畅通</text>
+          <view class="trial-promise trial-promise-center">
+            <text class="promise-icon">✔</text>
+            <text class="promise-text">我们承诺，试听不收取任何费用！</text>
+          </view>
+          <view class="modal-footer">
+            <view class="modal-submit" bindtap="closeTrialModal">我知道了</view>
+          </view>
+        </view>
+      </block>
+      <!-- 表单状态（仅未登录用户） -->
+      <block wx:elif="{{!isLoggedIn}}">
+        <view class="modal-header">
+          <text class="modal-title">预约免费试听</text>
+          <view class="modal-close" bindtap="closeTrialModal">
+            <text>✕</text>
+          </view>
+        </view>
+        <view class="trial-promise">
+          <text class="promise-icon">✔</text>
+          <text class="promise-text">我们承诺，试听不收取任何费用！</text>
+        </view>
+        <view class="modal-body">
+          <view class="form-item">
+            <text class="form-label">怎么称呼您</text>
+            <input class="form-input" placeholder="请输入您的名字" value="{{trialForm.name}}" bindinput="onTrialNameInput" />
+          </view>
+          <view class="form-item">
+            <text class="form-label">怎么联系您</text>
+            <input class="form-input" placeholder="请输入手机号" type="number" maxlength="11" value="{{trialForm.phone}}" bindinput="onTrialPhoneInput" />
+          </view>
+        </view>
+        <view class="modal-footer">
+          <view class="modal-submit {{submittingTrial ? 'btn-disabled' : ''}}" bindtap="submitTrial">
+            {{submittingTrial ? '提交中...' : '立即预约'}}
+          </view>
+        </view>
+      </block>
+      <!-- 已登录但无手机号 -->
+      <block wx:elif="{{needPhone}}">
+        <view class="modal-header">
+          <text class="modal-title">请补充联系方式</text>
+          <view class="modal-close" bindtap="closeTrialModal">
+            <text>✕</text>
+          </view>
+        </view>
+        <view class="trial-promise">
+          <text class="promise-icon">✔</text>
+          <text class="promise-text">我们承诺，试听不收取任何费用！</text>
+        </view>
+        <view class="modal-body">
+          <view class="form-item">
+            <text class="form-label">怎么联系您</text>
+            <input class="form-input" placeholder="请输入手机号" type="number" maxlength="11" value="{{trialForm.phone}}" bindinput="onTrialPhoneInput" />
+          </view>
+        </view>
+        <view class="modal-footer">
+          <view class="modal-submit" bindtap="submitPhone">立即预约</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 下单确认弹窗 -->
+  <view class="modal-mask" wx:if="{{showOrderModal}}" bindtap="closeOrderModal">
+    <view class="modal-card" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">确认下单</text>
+        <view class="modal-close" bindtap="closeOrderModal">
+          <text>✕</text>
+        </view>
+      </view>
+      <view class="modal-body">
+        <view class="order-info-row">
+          <text class="order-label">课程名称</text>
+          <text class="order-value">{{course.name}}</text>
+        </view>
+        <view class="order-info-row">
+          <text class="order-label">总课时</text>
+          <text class="order-value">{{course.totalHours}} 课时</text>
+        </view>
+        <view class="order-info-row">
+          <text class="order-label">课程价格</text>
+          <text class="order-value price-text">¥{{course.price || '0'}}</text>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <view class="modal-submit" bindtap="confirmOrder">确认下单</view>
+      </view>
+      <view class="order-tip">
+        <text>下单后请联系工作人员线下付款</text>
+      </view>
+    </view>
+  </view>
+</view>

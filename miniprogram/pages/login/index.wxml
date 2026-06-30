@@ -1,0 +1,129 @@
+<view class="page">
+  <view class="header-gradient"></view>
+
+  <!-- Logo 区域 -->
+  <view class="logo-area" style="padding-top: {{navPaddingTop * 2}}px;">
+    <view class="logo-circle">
+      <text class="logo-text">趣</text>
+    </view>
+    <text class="app-name">趣学坊</text>
+    <text class="app-slogan">发现兴趣，遇见更好的自己</text>
+  </view>
+
+  <!-- 登录区域 -->
+  <view class="login-area">
+    <!-- 微信登录 -->
+    <button class="wx-login-btn" bindtap="onWxLogin" disabled="{{loading}}">
+      <view class="wx-icon-wrap">
+        <view class="wx-svg-icon"></view>
+      </view>
+      <text>微信登录</text>
+    </button>
+
+    <!-- 手机号登录入口 -->
+    <view class="phone-entry" wx:if="{{!showPhoneLogin}}" bindtap="togglePhoneLogin">
+      <text class="phone-entry-text">使用手机号码登录</text>
+    </view>
+
+    <!-- 手机号登录表单 -->
+    <view class="phone-section" wx:if="{{showPhoneLogin}}">
+      <view class="section-divider">
+        <view class="divider-line"></view>
+        <text class="divider-text">手机号登录</text>
+        <view class="divider-line"></view>
+      </view>
+
+      <view class="input-group">
+        <view class="input-wrap">
+          <view class="input-icon icon-phone"></view>
+          <input
+            class="input-field"
+            type="number"
+            maxlength="11"
+            placeholder="请输入手机号"
+            value="{{phone}}"
+            bindinput="onPhoneInput"
+          />
+        </view>
+      </view>
+
+      <view class="input-group">
+        <view class="input-wrap code-wrap">
+          <view class="input-icon icon-code"></view>
+          <input
+            class="input-field"
+            type="number"
+            maxlength="6"
+            placeholder="请输入验证码"
+            value="{{code}}"
+            bindinput="onCodeInput"
+          />
+          <view
+            class="code-btn {{countdown > 0 ? 'disabled' : ''}}"
+            bindtap="onSendCode"
+          >
+            <text>{{countdown > 0 ? countdown + 's' : '获取验证码'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <button class="phone-login-btn" bindtap="onPhoneLogin" disabled="{{loading || !codeSent}}">
+        登录
+      </button>
+    </view>
+  </view>
+
+  <!-- 底部协议 -->
+  <view class="agreement">
+    <text class="agreement-text">登录即表示同意</text>
+    <text class="agreement-link">《用户协议》</text>
+    <text class="agreement-text">和</text>
+    <text class="agreement-link">《隐私政策》</text>
+  </view>
+
+  <!-- 资料填写弹窗 -->
+  <view class="modal-mask" wx:if="{{showProfileModal}}">
+    <view class="profile-card" catchtap="">
+      <view class="profile-header">
+        <text class="profile-title">完善个人资料</text>
+        <text class="profile-subtitle">设置头像和昵称，让大家认识你</text>
+      </view>
+
+      <view class="profile-body">
+        <!-- 头像选择 -->
+        <view class="avatar-section">
+          <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+            <image
+              class="avatar-preview"
+              src="{{tempAvatarUrl || '/assets/tabbar/mine.png'}}"
+              mode="aspectFill"
+            />
+            <view class="avatar-edit-badge">
+              <text>换</text>
+            </view>
+          </button>
+          <text class="avatar-tip">点击选择头像</text>
+        </view>
+
+        <!-- 昵称输入 -->
+        <view class="nickname-section">
+          <view class="nickname-wrap">
+            <input
+              class="nickname-input"
+              type="nickname"
+              placeholder="请输入昵称"
+              value="{{tempNickname}}"
+              bindinput="onNicknameInput"
+              bindblur="onNicknameInput"
+            />
+          </view>
+        </view>
+      </view>
+
+      <view class="profile-footer">
+        <view class="profile-skip" bindtap="skipProfile">跳过</view>
+        <view class="profile-save" bindtap="saveProfile">保存</view>
+      </view>
+    </view>
+  </view>
+</view>

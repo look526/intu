@@ -1,0 +1,66 @@
+<view class="page">
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="back-icon"></view>
+    </view>
+    <text class="nav-title">意见反馈</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="form-area">
+    <!-- 反馈类型 -->
+    <view class="section">
+      <view class="section-title">反馈类型</view>
+      <picker mode="selector" range="{{types}}" bindchange="onTypeChange">
+        <view class="picker-box">
+          <text class="picker-text">{{type}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 反馈内容 -->
+    <view class="section">
+      <view class="section-title">反馈内容 <text class="required">*</text></view>
+      <textarea
+        class="textarea"
+        placeholder="请详细描述您的建议或问题（至少5个字）"
+        maxlength="500"
+        bindinput="onContentInput"
+        value="{{content}}"
+      />
+      <view class="char-count">{{content.length}}/500</view>
+    </view>
+
+    <!-- 图片上传 -->
+    <view class="section">
+      <view class="section-title">截图（选填，最多4张）</view>
+      <view class="image-grid">
+        <view class="image-item" wx:for="{{images}}" wx:key="*this">
+          <image class="preview-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" />
+          <view class="remove-btn" catchtap="removeImage" data-index="{{index}}">×</view>
+        </view>
+        <view class="image-item add-btn" wx:if="{{images.length < 4}}" bindtap="chooseImage">
+          <view class="add-icon">+</view>
+          <text class="add-text">添加图片</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="section">
+      <view class="section-title">联系方式（选填）</view>
+      <input class="input" placeholder="手机号或微信号，方便我们联系您" bindinput="onContactInput" value="{{contact}}" />
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-wrap">
+    <button class="submit-btn" bindtap="submit" disabled="{{submitting}}" loading="{{submitting}}">
+      提交反馈
+    </button>
+  </view>
+</view>

@@ -1,0 +1,83 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/course/list/index",
+    "pages/study/index",
+    "pages/mine/index",
+    "pages/course/detail/index",
+    "pages/order/list/index",
+    "pages/order/detail/index",
+    "pages/note/publish/index",
+    "pages/note/detail/index",
+    "pages/note/list/index",
+    "pages/note/favorites/index",
+    "pages/classgroup/detail/index",
+    "pages/apply/teacher/index",
+    "pages/apply/venue/index",
+    "pages/message/index",
+    "pages/search/index",
+    "pages/login/index",
+    "pages/credits/index",
+    "pages/profile/edit/index",
+    "pages/teacher/detail/index",
+    "pages/checkin/index",
+    "pages/trial/list/index",
+    "pages/webview/index",
+    "pages/feedback/index",
+    "pages/about/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "趣学坊",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f8f9fa",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#2563EB",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/tabbar/home.png",
+        "selectedIconPath": "assets/tabbar/home_active.png"
+      },
+      {
+        "pagePath": "pages/course/list/index",
+        "text": "选课",
+        "iconPath": "assets/tabbar/course.png",
+        "selectedIconPath": "assets/tabbar/course_active.png"
+      },
+      {
+        "pagePath": "pages/study/index",
+        "text": "学习",
+        "iconPath": "assets/tabbar/study.png",
+        "selectedIconPath": "assets/tabbar/study_active.png"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的",
+        "iconPath": "assets/tabbar/mine.png",
+        "selectedIconPath": "assets/tabbar/mine_active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {
+    "popup": "components/popup/index"
+  },
+  "permission": {
+      "scope.userLocation": {
+        "desc": "你的位置信息将用于上课签到打卡功能" 
+      }
+    },
+    "requiredPrivateInfos": ["getLocation"]
+    
+ 
+}

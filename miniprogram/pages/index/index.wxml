@@ -1,0 +1,114 @@
+<view class="page-wrapper">
+  <view class="header-gradient"></view>
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <text class="nav-title">趣学坊</text>
+  </view>
+  <view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar" bindtap="goSearch">
+    <text class="search-icon">🔍</text>
+    <text class="search-placeholder">搜索课程、您感兴趣的课程应有尽有</text>
+  </view>
+
+  <!-- Banner 轮播 -->
+  <swiper class="banner-swiper" indicator-dots autoplay circular interval="{{3000}}">
+    <swiper-item wx:for="{{banners}}" wx:key="imageUrl" bindtap="onBannerTap" data-index="{{index}}">
+      <image class="banner-image" src="{{item.imageUrl}}" mode="aspectFill" />
+      <view class="banner-overlay">
+        <text class="banner-title">{{item.title}}</text>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 金刚区分类 -->
+  <view class="categories">
+    <view class="category-item" wx:for="{{categories}}" wx:key="name" bindtap="onCategoryTap" data-link-url="{{item.linkUrl}}">
+      <view class="category-icon" style="background:{{item.iconUrl ? 'transparent' : item.color}};">
+        <image wx:if="{{item.iconUrl}}" class="category-icon-img" src="{{item.iconUrl}}" mode="aspectFill" />
+        <text wx:else class="category-icon-text">{{item.icon}}</text>
+      </view>
+      <text class="category-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- 推荐课程 -->
+  <view class="section-header">
+    <text class="section-title">推荐课程</text>
+    <view class="section-more" bindtap="goAllCourses">
+      <text>全部</text>
+      <text class="arrow">></text>
+    </view>
+  </view>
+
+  <view class="course-list">
+    <view class="course-card" wx:for="{{courses}}" wx:key="id" bindtap="goCourseDetail" data-id="{{item.id}}">
+      <view class="course-cover-wrap">
+        <image class="course-cover" src="{{item.coverImage}}" mode="aspectFill" />
+        <view class="course-tag" style="background:#2563EB;">{{item.category.name}}</view>
+      </view>
+      <view class="course-info">
+        <text class="course-title">{{item.name}}</text>
+        <text class="course-desc">{{item.description}}</text>
+        <view class="course-bottom">
+          <text class="course-price">{{item.totalHours}}课时</text>
+          <view class="course-enroll">
+            <!-- <text class="enroll-icon-text">👤</text> -->
+            <text class="enroll-count">老师: {{item.teacher.realName}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 优秀教师 -->
+  <view class="section-header" wx:if="{{featuredTeachers.length}}">
+    <text class="section-title">优秀教师</text>
+  </view>
+  <scroll-view class="teacher-scroll" scroll-x wx:if="{{featuredTeachers.length}}">
+    <view class="teacher-card" wx:for="{{featuredTeachers}}" wx:key="id" bindtap="goTeacherDetail" data-id="{{item.id}}">
+      <image class="teacher-avatar" src="{{item.avatar}}" mode="aspectFill" />
+      <text class="teacher-name">{{item.realName}}</text>
+      <text class="teacher-spec">{{item.specialties}}</text>
+      <view class="teacher-rating">
+        <text class="rating-star">⭐</text>
+        <text class="rating-num">{{item.rating}}</text>
+      </view>
+      <text class="teacher-courses">{{item.topCourseNames}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 优秀班级 -->
+  <view class="section-header" wx:if="{{rankingList.length}}">
+    <text class="section-title">优秀班级</text>
+  </view>
+  <scroll-view class="rank-filter" scroll-x wx:if="{{rankingList.length || courseCategories.length}}">
+    <view class="filter-tag {{rankFilter === 'all' ? 'active' : ''}}" bindtap="onRankFilterTap" data-type="all" data-id="">全部</view>
+    <view class="filter-tag {{rankFilter === item.id ? 'active' : ''}}" wx:for="{{courseCategories}}" wx:key="id" bindtap="onRankFilterTap" data-type="category" data-id="{{item.id}}">{{item.name}}</view>
+  </scroll-view>
+  <view class="ranking-list" wx:if="{{rankingList.length}}">
+    <view class="ranking-card" wx:for="{{rankingList}}" wx:key="id">
+      <view class="rank-badge rank-{{index < 3 ? index + 1 : 'default'}}">{{index + 1}}</view>
+      <view class="rank-info">
+        <text class="rank-name">{{item.name}}</text>
+        <text class="rank-course">{{item.courseName}}</text>
+      </view>
+      <view class="rank-stats">
+        <view class="rank-stat">
+          <text class="stat-val">{{item.checkinRateText}}</text>
+          <text class="stat-label">打卡率</text>
+        </view>
+        <view class="rank-stat">
+          <text class="stat-val">{{item.noteCount}}</text>
+          <text class="stat-label">笔记数</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="empty-ranking" wx:if="{{!rankingList.length && courseCategories.length}}">
+    <text class="empty-text">暂无排名数据</text>
+  </view>
+
+  </view>
+</view>
+
+<popup visible="{{popupVisible}}" popup-data="{{popupData}}" bind:close="onPopupClose" />

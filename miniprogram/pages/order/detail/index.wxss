@@ -1,0 +1,273 @@
+/* 订单详情页 */
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+/* 自定义导航栏 */
+.custom-nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 24rpx;
+}
+
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.back-icon {
+  width: 20rpx;
+  height: 20rpx;
+  border-left: 4rpx solid #fff;
+  border-bottom: 4rpx solid #fff;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.nav-placeholder {
+  width: 64rpx;
+}
+
+/* 加载 */
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400rpx;
+  color: #bbb;
+  font-size: 28rpx;
+}
+
+/* 状态区 */
+.status-section {
+  margin-top: -120rpx;
+  padding: 140rpx 40rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+}
+
+.status-bg-pending {
+  background: linear-gradient(135deg, #fa8c16, #f5a623);
+}
+
+.status-bg-paid {
+  background: linear-gradient(135deg, #07c160, #36d57d);
+}
+
+.status-bg-cancelled {
+  background: linear-gradient(135deg, #aaa, #ccc);
+}
+
+.status-icon-wrap {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+.status-svg {
+  width: 52rpx;
+  height: 52rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.status-svg-pending {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='12 6 12 12 16 14'/%3E%3C/svg%3E");
+}
+
+.status-svg-paid {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/%3E%3Cpolyline points='22 4 12 14.01 9 11.01'/%3E%3C/svg%3E");
+}
+
+.status-svg-cancelled {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='15' y1='9' x2='9' y2='15'/%3E%3Cline x1='9' y1='9' x2='15' y2='15'/%3E%3C/svg%3E");
+}
+
+.status-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 12rpx;
+}
+
+.status-desc {
+  display: block;
+  font-size: 26rpx;
+  opacity: 0.85;
+}
+
+/* 信息卡片 */
+.info-card {
+  background: #fff;
+  margin: -24rpx 32rpx 24rpx;
+  border-radius: 32rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+  position: relative;
+  z-index: 1;
+}
+
+.info-card + .info-card {
+  margin-top: 24rpx;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 24rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.title-indicator {
+  width: 6rpx;
+  height: 28rpx;
+  background: #2563EB;
+  border-radius: 3rpx;
+  margin-right: 14rpx;
+}
+
+/* 课程信息行 */
+.course-row {
+  display: flex;
+  gap: 24rpx;
+}
+
+.course-cover {
+  width: 180rpx;
+  height: 130rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+  background: #f0f0f0;
+}
+
+.course-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.course-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.course-teacher {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.course-hours {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 订单信息行 */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18rpx 0;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #333;
+  max-width: 65%;
+  text-align: right;
+  word-break: break-all;
+}
+
+.price-row {
+  padding-top: 24rpx;
+  margin-top: 8rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.price-value {
+  font-size: 38rpx;
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* 底部操作 */
+.action-area {
+  display: flex;
+  gap: 24rpx;
+  padding: 40rpx 32rpx;
+}
+
+.action-btn-cancel {
+  flex: 1;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid rgba(0, 0, 0, 0.1);
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  color: #999;
+}
+
+.action-btn-contact {
+  flex: 1.5;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8rpx 32rpx rgba(37, 99, 235, 0.25);
+}
+
+.action-btn-back {
+  flex: 1;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8rpx 32rpx rgba(37, 99, 235, 0.25);
+}

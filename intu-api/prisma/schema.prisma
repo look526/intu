@@ -1,0 +1,585 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== 枚举定义 ====================
+
+enum UserRole {
+  student
+  teacher
+  venue_owner
+  admin
+}
+
+enum UserStatus {
+  active
+  disabled
+}
+
+enum VenueStatus {
+  pending
+  approved
+  rejected
+  offline
+}
+
+enum ClassroomStatus {
+  active
+  maintenance
+}
+
+enum TrainingStatus {
+  pending
+  passed
+  failed
+}
+
+enum TeacherStatus {
+  active
+  frozen
+}
+
+enum CourseStatus {
+  draft
+  published
+  offline
+}
+
+enum ScheduleStatus {
+  scheduled
+  ongoing
+  completed
+  canceled
+}
+
+enum OrderStatus {
+  pending
+  paid
+  cancelled
+}
+
+enum NoteContentType {
+  text
+  image
+  video
+}
+
+enum ApplicationStatus {
+  pending
+  approved
+  rejected
+}
+
+enum ClassGroupStatus {
+  forming
+  scheduled
+  active
+  completed
+}
+
+enum NotificationType {
+  order_paid
+  teacher_application_result
+  venue_application_result
+  class_assigned
+  class_started
+  checkin_success
+  class_reminder
+}
+
+enum TrialBookingStatus {
+  pending
+  contacted
+  scheduled
+  completed
+  converted
+  cancelled
+}
+
+// ==================== 系统数据表 ====================
+
+/// 用户统一表
+model User {
+  id        String     @id @default(uuid()) @db.VarChar(36)
+  phone     String?    @unique @db.VarChar(20)
+  openid    String?    @unique @map("openid") @db.VarChar(128)
+  nickname  String?    @db.VarChar(50)
+  avatar    String?    @db.Text
+  password  String?    @db.VarChar(255)
+  role      UserRole   @default(student)
+  status    UserStatus @default(active)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  admin               Admin?
+  student             Student?
+  teacher             Teacher?
+  ownedVenues         Venue[]
+  assistantSchedules  Schedule[]          @relation("ScheduleAssistant")
+  createdSchedules    Schedule[]          @relation("ScheduleCreator")
+  teacherApplications TeacherApplication[]
+  venueApplications   VenueApplication[]
+  notifications       Notification[]
+  trialBookings       TrialBooking[]
+  trialFollowUps      TrialFollowUp[]
+  feedbacks           Feedback[]
+
+  @@map("users")
+}
+
+/// 管理员扩展表
+model Admin {
+  id         String @id @default(uuid()) @db.VarChar(36)
+  userId     String @unique @map("user_id") @db.VarChar(36)
+  realName   String @map("real_name") @db.VarChar(50)
+  permission Json?  @default("[]")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("admins")
+}
+
+/// 系统配置表
+model SystemConfig {
+  key       String   @id @db.VarChar(50)
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
+}
+
+// ==================== 业务数据表 ====================
+
+// ---------- 模块1：场地管理 ----------
+
+/// 场地
+model Venue {
+  id          String      @id @default(uuid()) @db.VarChar(36)
+  ownerId     String?     @map("owner_id") @db.VarChar(36)
+  name        String      @db.VarChar(100)
+  address     String      @db.Text
+  latitude    Decimal     @db.Decimal(10, 8)
+  longitude   Decimal     @db.Decimal(11, 8)
+  trafficInfo String?     @map("traffic_info") @db.Text
+  area        Int?
+  photos      Json?       @default("[]")
+  status      VenueStatus @default(pending)
+  auditRemark    String?     @map("audit_remark") @db.Text
+  isSiteVisited  Boolean     @default(false) @map("is_site_visited")
+  siteVisitNote  String?     @map("site_visit_note") @db.Text
+  siteVisitDate  DateTime?   @map("site_visit_date") @db.Date
+  createdAt      DateTime    @default(now()) @map("created_at")
+
+  owner      User?       @relation(fields: [ownerId], references: [id])
+  classrooms Classroom[]
+
+  @@map("venues")
+}
+
+/// 教室
+model Classroom {
+  id        String          @id @default(uuid()) @db.VarChar(36)
+  venueId   String          @map("venue_id") @db.VarChar(36)
+  name      String          @db.VarChar(50)
+  capacity  Int
+  resources Json?           @default("[]")
+  timeSlots Json?           @map("time_slots") @default("[]")
+  status    ClassroomStatus @default(active)
+
+  venue     Venue      @relation(fields: [venueId], references: [id])
+  schedules Schedule[]
+
+  @@map("classrooms")
+}
+
+// ---------- 模块2：老师管理 ----------
+
+/// 老师档案
+model Teacher {
+  id              String         @id @db.VarChar(36)
+  userId          String         @unique @map("user_id") @db.VarChar(36)
+  realName        String         @map("real_name") @db.VarChar(50)
+  bio             String?        @db.Text
+  specialties     String?        @db.VarChar(100)
+  certificateUrls Json?          @map("certificate_urls") @default("[]")
+  trainingStatus  TrainingStatus @default(pending) @map("training_status")
+  trainingDate    DateTime?      @map("training_date") @db.Date
+  rating          Decimal        @default(0) @db.Decimal(2, 1)
+  reviewCount     Int            @default(0) @map("review_count")
+  isRecommended   Boolean        @default(false) @map("is_recommended")
+  status          TeacherStatus  @default(active)
+
+  user      User       @relation(fields: [userId], references: [id])
+  courses   Course[]
+  schedules Schedule[]
+
+  @@map("teachers")
+}
+
+// ---------- 模块3：课程管理 ----------
+
+/// 课程分类
+model CourseCategory {
+  id       Int     @id @default(autoincrement())
+  name     String  @db.VarChar(20)
+  priority Int     @default(0)
+  icon     String? @db.VarChar(255)
+
+  courses Course[]
+
+  @@map("course_categories")
+}
+
+/// 课程
+model Course {
+  id            String       @id @default(uuid()) @db.VarChar(36)
+  name          String       @db.VarChar(100)
+  categoryId    Int          @map("category_id")
+  coverImage    String?      @map("cover_image") @db.Text
+  description   String?      @db.Text
+  totalHours    Int          @default(0) @map("total_hours")
+  price         Decimal      @default(0) @map("price") @db.Decimal(10, 2)
+  teacherId     String       @map("teacher_id") @db.VarChar(36)
+  isRecommended Boolean      @default(false) @map("is_recommended")
+  status        CourseStatus @default(draft)
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  category  CourseCategory @relation(fields: [categoryId], references: [id])
+  teacher   Teacher        @relation(fields: [teacherId], references: [id])
+  schedules     Schedule[]
+  orders        Order[]
+  notes         Note[]
+  classGroups   ClassGroup[]
+  trialBookings TrialBooking[]
+
+  @@map("courses")
+}
+
+// ---------- 模块4：排课管理 ----------
+
+/// 排课实例
+model Schedule {
+  id          String         @id @default(uuid()) @db.VarChar(36)
+  courseId    String         @map("course_id") @db.VarChar(36)
+  classroomId String         @map("classroom_id") @db.VarChar(36)
+  teacherId   String         @map("teacher_id") @db.VarChar(36)
+  assistantId String?        @map("assistant_id") @db.VarChar(36)
+  startTime   DateTime       @map("start_time")
+  endTime     DateTime       @map("end_time")
+  status       ScheduleStatus @default(scheduled)
+  createdBy    String         @map("created_by") @db.VarChar(36)
+  classGroupId String?        @map("class_group_id") @db.VarChar(36)
+
+  course         Course          @relation(fields: [courseId], references: [id])
+  classroom      Classroom       @relation(fields: [classroomId], references: [id])
+  teacher        Teacher         @relation(fields: [teacherId], references: [id])
+  assistant      User?           @relation("ScheduleAssistant", fields: [assistantId], references: [id])
+  creator        User            @relation("ScheduleCreator", fields: [createdBy], references: [id])
+  classGroup     ClassGroup?     @relation(fields: [classGroupId], references: [id])
+  checkinRecords CheckinRecord[]
+  courseReviews  CourseReview[]
+
+  @@map("schedules")
+}
+
+// ---------- 模块5：学员与订单 ----------
+
+/// 学员扩展
+model Student {
+  id        String  @id @db.VarChar(36)
+  userId    String  @unique @map("user_id") @db.VarChar(36)
+  credits   Int     @default(0)
+  hutSource String? @map("hut_source") @db.VarChar(50)
+  stewardId String? @map("steward_id") @db.VarChar(36)
+
+  user               User                @relation(fields: [userId], references: [id])
+  orders             Order[]
+  checkinRecords     CheckinRecord[]
+  notes              Note[]
+  noteLikes          NoteLike[]
+  noteComments       NoteComment[]
+  noteFavorites      NoteFavorite[]
+  classGroupStudents ClassGroupStudent[]
+  courseReviews      CourseReview[]
+
+  @@map("students")
+}
+
+/// 订单
+model Order {
+  id          String      @id @default(uuid()) @db.VarChar(36)
+  studentId   String      @map("student_id") @db.VarChar(36)
+  courseId    String      @map("course_id") @db.VarChar(36)
+  scheduleIds Json?       @map("schedule_ids") @default("[]")
+  amount      Decimal     @db.Decimal(10, 2)
+  status      OrderStatus @default(pending)
+  paidAt      DateTime?   @map("paid_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [id])
+  course  Course  @relation(fields: [courseId], references: [id])
+
+  @@map("orders")
+}
+
+// ---------- 模块5A：班级管理 ----------
+
+/// 班级
+model ClassGroup {
+  id          String           @id @default(uuid()) @db.VarChar(36)
+  courseId    String           @map("course_id") @db.VarChar(36)
+  name        String           @db.VarChar(100)
+  status      ClassGroupStatus @default(forming)
+  maxStudents Int              @default(30) @map("max_students")
+  startDate   DateTime?        @map("start_date") @db.Date
+  endDate     DateTime?        @map("end_date") @db.Date
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  course    Course              @relation(fields: [courseId], references: [id])
+  students  ClassGroupStudent[]
+  schedules Schedule[]
+  notes     Note[]
+
+  @@map("class_groups")
+}
+
+/// 班级-学员关联
+model ClassGroupStudent {
+  classGroupId String   @map("class_group_id") @db.VarChar(36)
+  studentId    String   @map("student_id") @db.VarChar(36)
+  enrolledAt   DateTime @default(now()) @map("enrolled_at")
+
+  classGroup ClassGroup @relation(fields: [classGroupId], references: [id])
+  student    Student    @relation(fields: [studentId], references: [id])
+
+  @@id([classGroupId, studentId])
+  @@map("class_group_students")
+}
+
+// ---------- 模块6：打卡与学分 ----------
+
+/// 打卡记录
+model CheckinRecord {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  studentId     String   @map("student_id") @db.VarChar(36)
+  scheduleId    String   @map("schedule_id") @db.VarChar(36)
+  checkinTime   DateTime @default(now()) @map("checkin_time")
+  locationValid Boolean  @default(false) @map("location_valid")
+  creditEarned  Int      @default(1) @map("credit_earned")
+
+  student  Student  @relation(fields: [studentId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+
+  @@map("checkin_records")
+}
+
+// ---------- 模块6A：课后评价 ----------
+
+/// 课后评价
+model CourseReview {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  studentId  String   @map("student_id") @db.VarChar(36)
+  scheduleId String   @map("schedule_id") @db.VarChar(36)
+  rating     Int      @default(5)
+  content    String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  student  Student  @relation(fields: [studentId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+
+  @@unique([studentId, scheduleId])
+  @@map("course_reviews")
+}
+
+// ---------- 模块7：学习笔记 ----------
+
+/// 笔记
+model Note {
+  id          String          @id @default(uuid()) @db.VarChar(36)
+  studentId   String          @map("student_id") @db.VarChar(36)
+  contentType NoteContentType @default(text) @map("content_type")
+  content     String          @db.Text
+  images      Json?           @default("[]")
+  videoUrl    String?         @map("video_url") @db.Text
+  courseId      String?         @map("course_id") @db.VarChar(36)
+  classGroupId  String?         @map("class_group_id") @db.VarChar(36)
+  likes         Int             @default(0)
+  comments      Int             @default(0)
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  student      Student       @relation(fields: [studentId], references: [id])
+  course       Course?       @relation(fields: [courseId], references: [id])
+  classGroup   ClassGroup?   @relation(fields: [classGroupId], references: [id])
+  noteLikes    NoteLike[]
+  noteComments NoteComment[]
+  noteFavorites NoteFavorite[]
+
+  @@map("notes")
+}
+
+/// 笔记点赞
+model NoteLike {
+  noteId    String @map("note_id") @db.VarChar(36)
+  studentId String @map("student_id") @db.VarChar(36)
+
+  note    Note    @relation(fields: [noteId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@id([noteId, studentId])
+  @@map("note_likes")
+}
+
+/// 笔记评论
+model NoteComment {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  noteId    String   @map("note_id") @db.VarChar(36)
+  studentId String   @map("student_id") @db.VarChar(36)
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  note    Note    @relation(fields: [noteId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@map("note_comments")
+}
+
+/// 笔记收藏
+model NoteFavorite {
+  noteId    String   @map("note_id") @db.VarChar(36)
+  studentId String   @map("student_id") @db.VarChar(36)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  note    Note    @relation(fields: [noteId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@id([noteId, studentId])
+  @@map("note_favorites")
+}
+
+// ---------- 模块8：申请流程 ----------
+
+/// 老师申请
+model TeacherApplication {
+  id              String            @id @default(uuid()) @db.VarChar(36)
+  userId          String            @map("user_id") @db.VarChar(36)
+  realName        String            @map("real_name") @db.VarChar(50)
+  phone           String            @db.VarChar(20)
+  specialties     String            @db.VarChar(100)
+  teachingYears   Int               @default(0) @map("teaching_years")
+  bio             String?           @db.Text
+  avatarUrl       String?           @map("avatar_url") @db.Text
+  certificateUrls Json?             @map("certificate_urls") @default("[]")
+  portfolioUrls   Json?             @map("portfolio_urls") @default("[]")
+  introVideoUrl   String?           @map("intro_video_url") @db.Text
+  status          ApplicationStatus @default(pending)
+  auditRemark     String?           @map("audit_remark") @db.Text
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("teacher_applications")
+}
+
+/// 场地申请
+model VenueApplication {
+  id          String            @id @default(uuid()) @db.VarChar(36)
+  userId      String            @map("user_id") @db.VarChar(36)
+  name        String            @db.VarChar(100)
+  address     String            @db.Text
+  latitude    Decimal           @db.Decimal(10, 8)
+  longitude   Decimal           @db.Decimal(11, 8)
+  trafficInfo String?           @map("traffic_info") @db.Text
+  area        Int?
+  photos      Json?             @default("[]")
+  status      ApplicationStatus @default(pending)
+  auditRemark String?           @map("audit_remark") @db.Text
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("venue_applications")
+}
+
+// ---------- 模块9：消息通知 ----------
+
+/// 站内通知
+model Notification {
+  id        String           @id @default(uuid()) @db.VarChar(36)
+  userId    String           @map("user_id") @db.VarChar(36)
+  type      NotificationType
+  title     String           @db.VarChar(100)
+  content   String           @db.Text
+  isRead    Boolean          @default(false) @map("is_read")
+  extra     Json?            @default("{}")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// ---------- 模块10：试听预约 ----------
+
+/// 试听预约
+model TrialBooking {
+  id         String             @id @default(uuid()) @db.VarChar(36)
+  courseId   String             @map("course_id") @db.VarChar(36)
+  userId     String?            @map("user_id") @db.VarChar(36)
+  name       String             @db.VarChar(50)
+  phone      String             @db.VarChar(20)
+  preferDate DateTime?          @map("prefer_date") @db.Date
+  status     TrialBookingStatus @default(pending)
+  remark     String?            @db.Text
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+
+  course    Course          @relation(fields: [courseId], references: [id])
+  user      User?           @relation(fields: [userId], references: [id])
+  followUps TrialFollowUp[]
+
+  @@map("trial_bookings")
+}
+
+/// 试听跟进记录
+model TrialFollowUp {
+  id             String   @id @default(uuid()) @db.VarChar(36)
+  trialBookingId String   @map("trial_booking_id") @db.VarChar(36)
+  adminId        String   @map("admin_id") @db.VarChar(36)
+  content        String   @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  trialBooking TrialBooking @relation(fields: [trialBookingId], references: [id])
+  admin        User         @relation(fields: [adminId], references: [id])
+
+  @@map("trial_follow_ups")
+}
+
+// ---------- 模型11：意见反馈 ----------
+
+/// 意见反馈
+model Feedback {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  userId    String   @map("user_id") @db.VarChar(36)
+  type      String   @db.VarChar(30)  // 功能建议、问题反馈、其他
+  content   String   @db.Text
+  images    Json?    @default("[]")
+  contact   String?  @db.VarChar(50)   // 联系方式（可选）
+  status    String   @default("pending") @db.VarChar(20)  // pending / replied / closed
+  reply     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("feedbacks")
+}

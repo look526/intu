@@ -1,0 +1,271 @@
+/* 发布笔记页 - 规范化样式 */
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+/* 头部渐变 */
+.header-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400rpx;
+  background: linear-gradient(to bottom, #eff6ff, #f8f9fa);
+  z-index: 0;
+}
+
+/* 自定义导航栏 */
+.custom-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 24rpx;
+}
+
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.back-icon {
+  width: 20rpx;
+  height: 20rpx;
+  border-left: 4rpx solid #1a1a1a;
+  border-bottom: 4rpx solid #1a1a1a;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.nav-placeholder {
+  width: 64rpx;
+}
+
+/* 内容区域 */
+.content-wrap {
+  position: relative;
+  z-index: 1;
+  padding: 16rpx 32rpx 40rpx;
+}
+
+/* 通用卡片 */
+.card {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+/* 卡片标签 */
+.card-label {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20rpx;
+}
+
+.label-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: rgba(37, 99, 235, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14rpx;
+}
+
+.label-svg {
+  width: 28rpx;
+  height: 28rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.label-svg-image {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpolyline points='21 15 16 10 5 21'/%3E%3C/svg%3E");
+}
+
+.label-svg-eye {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+
+/* 文本输入 */
+.input-card {
+  padding-bottom: 16rpx;
+}
+
+.content-input {
+  width: 100%;
+  min-height: 240rpx;
+  font-size: 30rpx;
+  line-height: 1.7;
+  color: #1a1a1a;
+  box-sizing: border-box;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 22rpx;
+  color: #ccc;
+  margin-top: 12rpx;
+}
+
+/* 图片网格 */
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.image-item {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.preview-img {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 24rpx;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  line-height: 1;
+}
+
+.add-image-btn {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 24rpx;
+  border: 2rpx dashed rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.add-svg {
+  width: 48rpx;
+  height: 48rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23bbb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='5' x2='12' y2='19'/%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E");
+}
+
+.add-text {
+  font-size: 22rpx;
+  color: #bbb;
+  margin-top: 8rpx;
+}
+
+/* 可见范围选项 */
+.visibility-options {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 4rpx;
+}
+
+.vis-option {
+  flex: 1;
+  text-align: center;
+  font-size: 26rpx;
+  padding: 16rpx 0;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.04);
+  color: #666;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.vis-option.active {
+  background: #2563EB;
+  color: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(37, 99, 235, 0.25);
+}
+
+/* Picker 行 */
+.picker-row {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.picker-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 20rpx;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 16rpx;
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: #1a1a1a;
+}
+
+.picker-text.placeholder {
+  color: #bbb;
+}
+
+.picker-arrow {
+  width: 16rpx;
+  height: 16rpx;
+  border-right: 3rpx solid #bbb;
+  border-bottom: 3rpx solid #bbb;
+  transform: rotate(-45deg);
+  margin-right: 4rpx;
+}
+
+/* 发布按钮 */
+.submit-btn {
+  background: #2563EB;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  padding: 26rpx 0;
+  border-radius: 999rpx;
+  margin-top: 40rpx;
+  box-shadow: 0 8rpx 24rpx rgba(37, 99, 235, 0.3);
+}
+
+.submit-btn.disabled {
+  background: #ccc;
+  box-shadow: none;
+}

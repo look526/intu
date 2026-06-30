@@ -1,0 +1,112 @@
+<view class="page">
+  <view class="header-gradient"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{navPaddingTop}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    <text class="nav-title">提供场地</text>
+  </view>
+
+  <!-- 审核状态页 -->
+  <view class="status-page" wx:if="{{applicationStatus && !showForm}}">
+    <!-- 待审核 Hero -->
+    <view class="hero-pending" wx:if="{{applicationStatus === 'pending'}}">
+      <view class="hero-glow"></view>
+      <view class="hero-badge">
+        <text class="hero-badge-icon">🏠</text>
+      </view>
+      <text class="hero-title">申请已提交，请静候佳音</text>
+      <view class="hero-divider"></view>
+      <text class="hero-quote">"愿意将闲置空间分享给热爱学习的人们，
+让每一寸场地都散发知识的温暖，
+感谢你为社区教育贡献力量。"</text>
+      <view class="hero-info-col">
+        <view class="hero-info-item">
+          <text class="hero-info-text">1-3 个工作日内完成审核</text>
+        </view>
+        <view class="hero-info-item">
+          <text class="hero-info-text">审核通过后，工作人员将联系您安排线下考察</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 已通过 -->
+    <view class="status-card approved" wx:if="{{applicationStatus === 'approved'}}">
+      <view class="status-icon-wrap approved-bg">
+        <text class="status-emoji">✅</text>
+      </view>
+      <text class="status-title">恭喜，场地审核通过！</text>
+      <text class="status-desc">您的场地已进入待考察阶段，工作人员将与您联系</text>
+      <view class="reapply-btn" bindtap="applyNewVenue">继续提供新场地</view>
+    </view>
+
+    <!-- 已驳回 -->
+    <view class="status-card rejected" wx:if="{{applicationStatus === 'rejected'}}">
+      <view class="status-icon-wrap rejected-bg">
+        <text class="status-emoji">❌</text>
+      </view>
+      <text class="status-title">审核未通过</text>
+      <view class="reject-reason" wx:if="{{auditRemark}}">
+        <text class="reject-label">原因：</text>
+        <text class="reject-text">{{auditRemark}}</text>
+      </view>
+      <view class="reapply-btn" bindtap="reapply">重新申请</view>
+    </view>
+  </view>
+
+  <!-- 申请表单 -->
+  <scroll-view class="form-scroll" scroll-y wx:if="{{showForm}}">
+    <!-- 基本信息 -->
+    <view class="form-card">
+      <text class="card-title">场地信息</text>
+      <view class="form-item">
+        <text class="form-label">场地名称 <text class="required">*</text></text>
+        <input class="form-input" placeholder="如：阳光舞蹈室、社区活动中心" value="{{name}}" bindinput="onInputChange" data-field="name" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">场地地址 <text class="required">*</text></text>
+        <view class="form-input picker-input" bindtap="chooseLocation">
+          <text class="{{address ? '' : 'placeholder'}}">{{address || '点击选择场地位置'}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </view>
+      <view class="location-info" wx:if="{{latitude && longitude}}">
+        <text class="location-text">经纬度：{{latitude}}, {{longitude}}</text>
+      </view>
+      <view class="form-item">
+        <text class="form-label">面积(m²) <text class="optional">（选填）</text></text>
+        <input class="form-input" placeholder="请输入场地面积" value="{{area}}" bindinput="onInputChange" data-field="area" type="digit" />
+      </view>
+    </view>
+
+    <!-- 交通信息 -->
+    <view class="form-card">
+      <text class="card-title">交通信息 <text class="optional">（选填）</text></text>
+      <textarea class="form-textarea" placeholder="描述附近的公交、地铁、停车场等交通信息..." maxlength="500" value="{{trafficInfo}}" bindinput="onInputChange" data-field="trafficInfo" />
+    </view>
+
+    <!-- 场地照片 -->
+    <view class="form-card">
+      <text class="card-title">场地照片 <text class="required">*</text></text>
+      <text class="card-hint">请上传场地内外实景照片（至少1张，最多9张）</text>
+      <view class="image-grid">
+        <view class="grid-item" wx:for="{{photos}}" wx:key="*this">
+          <image class="grid-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-urls="{{photos}}" data-current="{{item}}" />
+          <view class="remove-btn" bindtap="removePhoto" data-idx="{{index}}">×</view>
+        </view>
+        <view class="grid-add" wx:if="{{photos.length < 9}}" bindtap="choosePhotos">
+          <text class="upload-plus">+</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submitApplication">
+      {{submitting ? '提交中...' : '提交申请'}}
+    </view>
+
+    <view style="height: 80rpx;"></view>
+  </scroll-view>
+</view>

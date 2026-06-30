@@ -1,0 +1,184 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.header-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400rpx;
+  background: linear-gradient(to bottom, #eff6ff, #f8f9fa);
+  z-index: 0;
+}
+
+/* 自定义导航栏 */
+.custom-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 24rpx;
+}
+
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.back-icon {
+  width: 20rpx;
+  height: 20rpx;
+  border-left: 4rpx solid #333;
+  border-bottom: 4rpx solid #333;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.nav-placeholder {
+  width: 64rpx;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 40rpx 32rpx;
+}
+
+/* 头像区域 */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48rpx 0 40rpx;
+}
+
+.avatar-wrap {
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  background: #fff;
+  padding: 6rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.08);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-placeholder-text {
+  font-size: 48rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+.avatar-edit-badge {
+  position: absolute;
+  right: 4rpx;
+  bottom: 4rpx;
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: #2563EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 12rpx rgba(37, 99, 235, 0.3);
+}
+
+.edit-icon-text {
+  font-size: 26rpx;
+}
+
+.avatar-tip {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 表单卡片 */
+.form-card {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 0 32rpx;
+  margin-bottom: 48rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 36rpx 0;
+}
+
+.form-label {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+  width: 140rpx;
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+  text-align: right;
+}
+
+.form-input::placeholder {
+  color: #ccc;
+}
+
+.form-divider {
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* 保存按钮 */
+.save-btn {
+  width: 100%;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border-radius: 999rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 8rpx 32rpx rgba(37, 99, 235, 0.3);
+}
+
+.save-btn.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}

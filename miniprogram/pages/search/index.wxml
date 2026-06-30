@@ -1,0 +1,43 @@
+<view class="page">
+  <!-- 搜索栏 -->
+  <view class="search-header" style="padding-top: {{navPaddingTop}}px;">
+    <view class="search-back" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="search-input-wrap">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索课程名称"
+        value="{{keyword}}"
+        bindinput="onInput"
+        focus="true"
+        confirm-type="search"
+      />
+      <text class="clear-btn" wx:if="{{keyword}}" bindtap="onClear">✕</text>
+    </view>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view class="results">
+    <view wx:if="{{loading}}" class="tip-text">搜索中...</view>
+
+    <view wx:elif="{{searched && results.length === 0}}" class="tip-text">未找到相关课程</view>
+
+    <view
+      class="result-item"
+      wx:for="{{results}}"
+      wx:key="id"
+      bindtap="goCourseDetail"
+      data-id="{{item.id}}"
+    >
+      <image class="result-cover" src="{{item.coverImage}}" mode="aspectFill" wx:if="{{item.coverImage}}" />
+      <view class="result-cover placeholder" wx:else></view>
+      <view class="result-info">
+        <text class="result-title">{{item.name}}</text>
+        <text class="result-meta">{{item.category.name}} · {{item.totalHours}}课时</text>
+        <text class="result-teacher">{{item.teacher.realName}}</text>
+      </view>
+    </view>
+  </view>
+</view>
